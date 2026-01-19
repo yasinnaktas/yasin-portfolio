@@ -468,7 +468,7 @@ function ExitBadge() {
               <p className="text-white/40 mt-1">Reklam Bütçesi</p>
             </div>
             <div className="text-center p-2 md:p-3 rounded-xl bg-amber-500/5">
-              <span className="text-amber-400 text-xl md:text-2xl font-bold block">230M+</span>
+              <span className="text-amber-400 text-xl md:text-2xl font-bold block">50M+</span>
               <p className="text-white/40 mt-1">Toplam İzlenme</p>
             </div>
           </div>
@@ -920,7 +920,7 @@ function ContactSection() {
             {[
               { href: 'https://linkedin.com/in/yasinakkts', label: 'LinkedIn' },
               { href: 'https://instagram.com/creativetouchss', label: 'Instagram' },
-              { href: 'https://behance.net/yasinakktas', label: 'Behance' },
+            
             ].map((link) => (
               <a
                 key={link.label}
@@ -946,7 +946,7 @@ function Footer() {
     <footer className="py-6 md:py-8 px-4 md:px-6 border-t border-white/5">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4">
         <span className="text-white/30 text-xs md:text-sm">© 2026 Yasin Aktaş</span>
-        <span className="text-white/30 text-xs md:text-sm">İstanbul'dan ♥ ile</span>
+        <span className="text-white/30 text-xs md:text-sm">İstanbul'dan sevgiler ile</span>
       </div>
     </footer>
   )
