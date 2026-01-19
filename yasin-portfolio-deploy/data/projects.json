@@ -1,0 +1,67 @@
+{
+  "lastUpdated": "2024-01-15T12:00:00.000Z",
+  "source": "https://yasinfilms.com.tr/work",
+  "totalProjects": 6,
+  "projects": [
+    {
+      "id": "project-1",
+      "title": "Brand Campaign 2024",
+      "videoUrl": "/projects/brand-campaign.mp4",
+      "thumbnail": "/projects/thumb-brand.jpg",
+      "category": "Marka Kampanyasi",
+      "year": "2024",
+      "client": "Enterprise Brand",
+      "description": "Kurumsal marka icin yapilan buyuk olcekli reklam kampanyasi."
+    },
+    {
+      "id": "project-2",
+      "title": "AI-Powered Commercial",
+      "videoUrl": "/projects/ai-commercial.mp4",
+      "thumbnail": "/projects/thumb-ai.jpg",
+      "category": "AI Video",
+      "year": "2024",
+      "client": "Tech Startup",
+      "description": "Yapay zeka destekli video icerik uretimi."
+    },
+    {
+      "id": "project-3",
+      "title": "Product Launch Film",
+      "videoUrl": "/projects/product-launch.mp4",
+      "thumbnail": "/projects/thumb-product.jpg",
+      "category": "Urun Tanitimi",
+      "year": "2024",
+      "client": "E-Commerce Brand",
+      "description": "Yeni urun lansmanı icin sinematik tanitim filmi."
+    },
+    {
+      "id": "project-4",
+      "title": "Social Media Series",
+      "videoUrl": "/projects/social-series.mp4",
+      "thumbnail": "/projects/thumb-social.jpg",
+      "category": "Sosyal Medya",
+      "year": "2024",
+      "client": "Lifestyle Brand",
+      "description": "Instagram ve YouTube icin optimize edilmis icerik serisi."
+    },
+    {
+      "id": "project-5",
+      "title": "Corporate Documentary",
+      "videoUrl": "/projects/corporate-doc.mp4",
+      "thumbnail": "/projects/thumb-corp.jpg",
+      "category": "Kurumsal Video",
+      "year": "2023",
+      "client": "Enterprise Company",
+      "description": "Sirket hikayesini anlatan belgesel formatta kurumsal video."
+    },
+    {
+      "id": "project-6",
+      "title": "Motion Graphics Reel",
+      "videoUrl": "/projects/motion-reel.mp4",
+      "thumbnail": "/projects/thumb-motion.jpg",
+      "category": "Reklam Filmi",
+      "year": "2023",
+      "client": "Creative Agency",
+      "description": "After Effects ile hazirlanan motion graphics showreel."
+    }
+  ]
+}
