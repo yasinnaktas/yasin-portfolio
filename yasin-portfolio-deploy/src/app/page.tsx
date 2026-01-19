@@ -7,7 +7,6 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 // DATA
 // ============================================
 const projects = [
-  { id: 1, title: 'Creative Production', category: 'Commercial / AI', youtubeId: 'iVGTb5L56_U', thumbnail: '/thumbnails/thumb1.jpg', year: '2024', orientation: 'landscape', color: '#8B5CF6' },
   { id: 2, title: 'Brand Campaign', category: 'Brand Film', youtubeId: 'EgRRRKSXxzg', thumbnail: '/thumbnails/thumb2.jpg', year: '2024', orientation: 'portrait', color: '#3B82F6', isShort: true },
   { id: 3, title: 'AI-Powered Commercial', category: 'AI Video', youtubeId: '8-YxCmFjRLA', thumbnail: '/thumbnails/thumb3.jpg', year: '2024', orientation: 'portrait', color: '#10B981', isShort: true },
   { id: 4, title: 'Social Media Series', category: 'Social Content', youtubeId: 'vrYuv7i9HUM', thumbnail: '/thumbnails/thumb4.jpg', year: '2023', orientation: 'landscape', color: '#F59E0B' },
@@ -26,25 +25,25 @@ const experience = [
   { 
     role: 'Kurucu & Kreatif Direktör', 
     company: 'Creative Touch Productions', 
-    period: '2025 - 2026', 
-    highlight: '10 kişilik ekiple 1000+ markaya tanıtım filmi, reklam ve sosyal medya içerikleri ürettik. Ajans 2026 Ocak ayında Hamburg merkezli bir teknoloji firmasına devredildi.',
+    period: 'Mart 2025 - Ocak 2026', 
+    highlight: '10 kişilik ekiple 1000+ markaya tanıtım filmi, reklam ve sosyal medya içerikleri ürettik. Yapay zeka destekli video içerikleri ve dijital danışmanlık hizmetleri sunduk. Ajans 2026 Ocak ayında Hamburg merkezli bir teknoloji firmasına devredildi.',
     logo: '◆',
     isExit: true 
   },
   { 
     role: 'Kreatif Videographer', 
     company: 'Turkuvaz Medya', 
-    period: '2017 - 2020', 
-    highlight: 'Sabah, ATV, A Haber gibi kanallarda marka kampanyaları, haber içerikleri ve özel projeler için video prodüksiyon süreçlerini yönettim.',
+    period: 'Ekim 2021 - Mayıs 2025', 
+    highlight: 'Sabah, ATV, A Haber gibi kanallarda marka kampanyaları ve haber içerikleri ürettim. Profesyonel kamera ve drone çekimleri, Adobe Premiere Pro ve After Effects ile post-prodüksiyon süreçlerini yönettim.',
     logo: 'T',
     isExit: false 
   },
   { 
     role: 'Stajyer', 
-    company: 'Turkuvaz Medya', 
-    period: '2016', 
-    highlight: 'Video prodüksiyon, kurgu ve post-prodüksiyon alanlarında profesyonel deneyim kazandım.',
-    logo: 'T',
+    company: 'TV8 / Acun Medya', 
+    period: 'Haziran 2020 - Ağustos 2020', 
+    highlight: 'TV yayın planlaması ve organizasyon süreçlerine destek verdim. Stüdyo ve dış çekimlerde asistanlık yaptım.',
+    logo: 'A',
     isExit: false 
   },
 ]
@@ -529,7 +528,7 @@ function Navigation() {
             
             <div className="hidden md:flex items-center gap-8">
               {['Projelerim', 'Hakkımda', 'Deneyim'].map((item) => (
-                <a
+                
                   key={item}
                   href={`#${item.toLowerCase()}`}
                   className="text-sm text-white/50 hover:text-white transition-colors relative group"
@@ -540,7 +539,7 @@ function Navigation() {
               ))}
             </div>
 
-            <a
+            
               href="#iletişim"
               className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-emerald-500 hover:bg-emerald-400 text-white transition-all"
             >
@@ -656,7 +655,7 @@ function HeroSection() {
             transition={{ delay: 0.7 }}
             className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 px-4 sm:px-0"
           >
-            <a
+            
               href="#projelerim"
               className="group inline-flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-white text-[#0a0a0f] font-semibold hover:bg-emerald-400 transition-all duration-300 text-sm md:text-base"
             >
@@ -665,7 +664,7 @@ function HeroSection() {
               </svg>
               Projelerimi Gör
             </a>
-            <a
+            
               href="#contact"
               className="inline-flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full border border-white/20 text-white font-medium hover:bg-white/5 backdrop-blur-sm transition-all text-sm md:text-base"
             >
@@ -931,7 +930,7 @@ function ContactSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4">
-            <a
+            
               href="mailto:yasin.aktas@outlook.com.tr"
               className="w-full sm:w-auto flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-medium transition-all text-sm md:text-base"
             >
@@ -941,7 +940,7 @@ function ContactSection() {
               </svg>
               Email Gönder
             </a>
-            <a
+            
               href="tel:+905304653974"
               className="w-full sm:w-auto flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full border border-white/20 text-white hover:bg-white/5 backdrop-blur-sm transition-all text-sm md:text-base"
             >
@@ -955,7 +954,7 @@ function ContactSection() {
               { href: 'https://instagram.com/creativetouchss', label: 'Instagram' },
               { href: 'https://behance.net/yasinakktas', label: 'Behance' },
             ].map((link) => (
-              <a
+              
                 key={link.label}
                 href={link.href}
                 target="_blank"
