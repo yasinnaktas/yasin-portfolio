@@ -54,7 +54,6 @@ const experience = [
 function MeshGradientBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden bg-[#0a0a0f]">
-      {/* Animated Mesh Gradients */}
       <motion.div
         animate={{
           scale: [1, 1.2, 1],
@@ -95,7 +94,6 @@ function MeshGradientBackground() {
         }}
       />
       
-      {/* Floating particles */}
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
@@ -116,7 +114,6 @@ function MeshGradientBackground() {
         />
       ))}
 
-      {/* Grid overlay */}
       <div 
         className="absolute inset-0 opacity-[0.02]"
         style={{
@@ -125,10 +122,8 @@ function MeshGradientBackground() {
         }}
       />
       
-      {/* Radial gradient overlay for depth */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#0a0a0f_70%)]" />
       
-      {/* Noise texture */}
       <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} />
     </div>
   )
@@ -147,7 +142,6 @@ function GlassCard({ children, className = '', hover = true }: { children: React
         boxShadow: '0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)',
       }}
     >
-      {/* Glass shine effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent pointer-events-none" />
       {children}
     </motion.div>
@@ -188,7 +182,6 @@ function BentoStatCard({ stat, index }: { stat: typeof stats[0]; index: number }
       transition={{ duration: 0.6, delay: index * 0.1 }}
     >
       <GlassCard className="relative p-4 md:p-6 h-full min-h-[120px] md:min-h-[150px]">
-        {/* Background graphic element */}
         <div className="absolute top-0 right-0 w-16 md:w-24 h-16 md:h-24 opacity-10">
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <motion.path
@@ -238,26 +231,21 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
           boxShadow: `0 10px 40px -15px ${project.color}40`,
         }}
       >
-        {/* Thumbnail */}
         <img 
           src={project.thumbnail} 
           alt={project.title}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
         
-        {/* Color accent on hover */}
         <motion.div 
           className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500"
           style={{ backgroundColor: project.color }}
         />
         
-        {/* Glass border */}
         <div className="absolute inset-0 rounded-xl md:rounded-3xl border border-white/10 group-hover:border-white/20 transition-colors" />
 
-        {/* Play Button */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div 
             whileHover={{ scale: 1.1 }}
@@ -269,7 +257,6 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
           </motion.div>
         </div>
 
-        {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-3 md:p-5">
           <span 
             className="inline-block px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[10px] md:text-xs font-medium mb-1 md:mb-2 backdrop-blur-sm"
@@ -302,7 +289,6 @@ function VideoModal({ project, onClose }: { project: typeof projects[0] | null; 
 
   if (!project) return null
 
-  // YouTube embed URL
   const embedUrl = project.isShort 
     ? `https://www.youtube.com/embed/${project.youtubeId}?autoplay=1&loop=1&playlist=${project.youtubeId}`
     : `https://www.youtube.com/embed/${project.youtubeId}?autoplay=1`
@@ -364,7 +350,6 @@ function Timeline() {
 
   return (
     <div className="relative">
-      {/* Timeline line */}
       <div className="absolute left-4 md:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-emerald-500/50 via-purple-500/50 to-transparent" />
       
       <div className="space-y-4 md:space-y-6">
@@ -378,7 +363,6 @@ function Timeline() {
             onClick={() => setActiveIndex(i)}
             className="relative pl-12 md:pl-20 cursor-pointer group"
           >
-            {/* Timeline dot/badge */}
             <motion.div 
               className={`absolute left-0 md:left-4 top-4 w-7 h-7 md:w-8 md:h-8 rounded-lg md:rounded-xl flex items-center justify-center font-bold text-xs md:text-sm transition-all duration-300 ${
                 exp.isExit 
@@ -495,7 +479,7 @@ function ExitBadge() {
 }
 
 // ============================================
-// NAVIGATION - Sticky Blur
+// NAVIGATION
 // ============================================
 function Navigation() {
   const [scrolled, setScrolled] = useState(false)
@@ -528,7 +512,7 @@ function Navigation() {
             
             <div className="hidden md:flex items-center gap-8">
               {['Projelerim', 'Hakkımda', 'Deneyim'].map((item) => (
-                
+                <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
                   className="text-sm text-white/50 hover:text-white transition-colors relative group"
@@ -539,7 +523,7 @@ function Navigation() {
               ))}
             </div>
 
-            
+            <a
               href="#iletişim"
               className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-emerald-500 hover:bg-emerald-400 text-white transition-all"
             >
@@ -561,7 +545,6 @@ function Navigation() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -593,14 +576,13 @@ function Navigation() {
 }
 
 // ============================================
-// HERO SECTION - Massive Typography
+// HERO SECTION
 // ============================================
 function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center pt-20 pb-16 md:pb-20 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 md:px-6 w-full">
         <div className="max-w-5xl mx-auto text-center">
-          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -611,7 +593,6 @@ function HeroSection() {
             <span className="text-xs md:text-sm text-white/60">İstanbul, Avrupa</span>
           </motion.div>
 
-          {/* Name */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -621,7 +602,6 @@ function HeroSection() {
             Yasin Aktaş
           </motion.p>
 
-          {/* Massive Title with Outline */}
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -636,7 +616,6 @@ function HeroSection() {
             </span>
           </motion.h1>
 
-          {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -648,14 +627,13 @@ function HeroSection() {
             <span className="text-white font-medium"> 1000+ markaya</span> hizmet verdim.
           </motion.p>
 
-          {/* CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
             className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 px-4 sm:px-0"
           >
-            
+            <a
               href="#projelerim"
               className="group inline-flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-white text-[#0a0a0f] font-semibold hover:bg-emerald-400 transition-all duration-300 text-sm md:text-base"
             >
@@ -664,8 +642,8 @@ function HeroSection() {
               </svg>
               Projelerimi Gör
             </a>
-            
-              href="#contact"
+            <a
+              href="#iletişim"
               className="inline-flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full border border-white/20 text-white font-medium hover:bg-white/5 backdrop-blur-sm transition-all text-sm md:text-base"
             >
               Benimle Çalış
@@ -673,7 +651,6 @@ function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -728,13 +705,12 @@ function WorkSection({ onSelect }: { onSelect: (p: typeof projects[0]) => void }
           ))}
         </div>
       </div>
-      
     </section>
   )
 }
 
 // ============================================
-// STATS SECTION - Bento Grid
+// STATS SECTION
 // ============================================
 function StatsSection() {
   return (
@@ -750,7 +726,6 @@ function StatsSection() {
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white">Başarılarım</h2>
         </motion.div>
         
-        {/* Bento Grid */}
         <div className="grid grid-cols-2 gap-3 md:gap-6">
           {stats.map((stat, i) => (
             <BentoStatCard key={i} stat={stat} index={i} />
@@ -801,7 +776,6 @@ function AboutSection() {
   return (
     <section id="hakkımda" className="py-16 md:py-32 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -819,7 +793,6 @@ function AboutSection() {
           </p>
         </motion.div>
 
-        {/* Expertise Grid */}
         <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-12">
           {expertiseAreas.map((area, areaIndex) => (
             <motion.div
@@ -830,17 +803,14 @@ function AboutSection() {
               transition={{ duration: 0.5, delay: areaIndex * 0.1 }}
             >
               <div className="group relative h-full p-5 md:p-6 rounded-xl md:rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/30 hover:bg-white/[0.04] transition-all duration-300">
-                {/* Subtle gradient on hover */}
                 <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 <div className="relative">
-                  {/* Category Title */}
                   <div className="flex items-center gap-3 mb-4 md:mb-5">
                     <div className="w-1 h-6 md:h-8 bg-gradient-to-b from-emerald-500 to-emerald-500/20 rounded-full" />
                     <h3 className="text-lg md:text-xl font-semibold text-white">{area.title}</h3>
                   </div>
                   
-                  {/* Items */}
                   <div className="space-y-3 md:space-y-4">
                     {area.items.map((item, itemIndex) => (
                       <div key={itemIndex} className="pl-4 border-l border-white/[0.06]">
@@ -855,7 +825,6 @@ function AboutSection() {
           ))}
         </div>
 
-        {/* Location Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -876,7 +845,6 @@ function AboutSection() {
           </div>
         </motion.div>
         
-        {/* Premium Exit Badge */}
         <div className="mt-12 md:mt-20">
           <ExitBadge />
         </div>
@@ -930,7 +898,7 @@ function ContactSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4">
-            
+            <a
               href="mailto:yasin.aktas@outlook.com.tr"
               className="w-full sm:w-auto flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-medium transition-all text-sm md:text-base"
             >
@@ -940,7 +908,7 @@ function ContactSection() {
               </svg>
               Email Gönder
             </a>
-            
+            <a
               href="tel:+905304653974"
               className="w-full sm:w-auto flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full border border-white/20 text-white hover:bg-white/5 backdrop-blur-sm transition-all text-sm md:text-base"
             >
@@ -954,7 +922,7 @@ function ContactSection() {
               { href: 'https://instagram.com/creativetouchss', label: 'Instagram' },
               { href: 'https://behance.net/yasinakktas', label: 'Behance' },
             ].map((link) => (
-              
+              <a
                 key={link.label}
                 href={link.href}
                 target="_blank"
