@@ -783,8 +783,8 @@ function AboutSection() {
           className="text-center mb-12 md:mb-16"
         >
           <span className="text-emerald-500 text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block">Hakkımda</span>
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
-            Medya ve <span className="text-outline">Teknolojinin</span> Kesişimi
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 font-playfair italic">
+            Medya ve <span className="text-outline not-italic">Teknolojinin</span> Kesişimi
           </h2>
           <p className="text-white/50 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             Turkuvaz Medya'da 4 yıl boyunca Kreatif Videographer olarak görev aldım. 
