@@ -2,210 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #111116;
-  --accent: #10B981;
-  --accent-light: #34D399;
+  --font-inter: 'Inter', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
-  background-color: var(--bg-primary);
-  color: #fff;
+  font-family: var(--font-inter), sans-serif;
+  background-color: #0a0a0f;
+  color: white;
   overflow-x: hidden;
 }
 
-::selection {
-  background-color: rgba(16, 185, 129, 0.3);
-  color: #fff;
+.font-playfair {
+  font-family: var(--font-playfair), serif;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+  color: transparent;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: #0a0a0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.4);
-  border-radius: 3px;
+  background: #333;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.6);
-}
-
-/* Text Outline Effect */
-.text-outline {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
-  text-stroke: 1px rgba(255, 255, 255, 0.5);
-}
-
-@media (min-width: 640px) {
-  .text-outline {
-    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.5);
-    text-stroke: 2px rgba(255, 255, 255, 0.5);
-  }
-}
-
-@media (min-width: 768px) {
-  .text-outline {
-    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.5);
-    text-stroke: 3px rgba(255, 255, 255, 0.5);
-  }
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #10B981 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-shift 4s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% center;
-  }
-  50% {
-    background-position: 100% center;
-  }
-}
-
-/* Glassmorphism */
-.glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Glow effects */
-.glow-emerald {
-  box-shadow: 0 0 60px rgba(16, 185, 129, 0.3);
-}
-
-.glow-amber {
-  box-shadow: 0 0 60px rgba(245, 158, 11, 0.3);
-}
-
-/* Card hover effect */
-.card-hover {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.2);
-}
-
-/* Smooth section transitions */
-section {
-  position: relative;
-}
-
-/* Responsive text */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 3rem !important;
-  }
-}
-
-/* Animated gradient border */
-@keyframes border-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animated-border {
-  position: relative;
-}
-
-.animated-border::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: conic-gradient(from 0deg, #10B981, #8B5CF6, #3B82F6, #10B981);
-  border-radius: inherit;
-  animation: border-spin 4s linear infinite;
-  z-index: -1;
-  opacity: 0.5;
-}
-
-/* Premium badge shine */
-@keyframes shine {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-15deg);
-  }
-}
-
-.shine-effect::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  animation: shine 3s ease-in-out infinite;
-}
-
-/* Floating animation */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Pulse glow */
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
-  }
-}
-
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+  background: #555;
 }
