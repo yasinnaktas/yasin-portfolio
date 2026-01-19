@@ -1,22 +1,23 @@
-import type { Metadata, Viewport } from 'next'
+import type { Metadata } from 'next'
+import { Inter, Playfair_Display } from 'next/font/google'
 import './globals.css'
 
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
+
 export const metadata: Metadata = {
-  title: 'Yasin Aktas | Kreatif Direktör',
-  description: '5+ yıl deneyimle video prodüksiyon, AI destekli içerik üretimi ve marka stratejileri. 1000+ markaya hizmet.',
-  keywords: ['Yasin Aktas', 'Kreatif Direktör', 'Video Prodüksiyon', 'AI Video', 'İstanbul'],
+  title: 'Yasin Aktaş | Creative Director',
+  description: 'Video prodüksiyon ve marka iletişimi alanında 5+ yıllık deneyim',
 }
 
-export const viewport: Viewport = {
-  themeColor: '#08080c',
-  width: 'device-width',
-  initialScale: 1,
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="tr" suppressHydrationWarning>
-      <body>{children}</body>
+    <html lang="tr">
+      <body className={`${inter.variable} ${playfair.variable} font-sans`}>{children}</body>
     </html>
   )
 }
