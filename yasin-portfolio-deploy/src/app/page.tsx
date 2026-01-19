@@ -7,13 +7,12 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 // DATA
 // ============================================
 const projects = [
-  { id: 1, title: 'Creative Production', category: 'Commercial / AI', video: '/videos/1.mp4', thumbnail: '/thumbnails/thumb1.jpg', year: '2024', orientation: 'landscape', color: '#8B5CF6' },
-  { id: 2, title: 'Brand Campaign', category: 'Brand Film', video: '/videos/2.mp4', thumbnail: '/thumbnails/thumb2.jpg', year: '2024', orientation: 'portrait', color: '#3B82F6' },
-  { id: 3, title: 'AI-Powered Commercial', category: 'AI Video', video: '/videos/3.mp4', thumbnail: '/thumbnails/thumb3.jpg', year: '2024', orientation: 'landscape', color: '#10B981' },
-  { id: 4, title: 'Social Media Series', category: 'Social Content', video: '/videos/4.mp4', thumbnail: '/thumbnails/thumb4.jpg', year: '2023', orientation: 'landscape', color: '#F59E0B' },
-  { id: 5, title: 'Corporate Documentary', category: 'Documentary', video: '/videos/5.mp4', thumbnail: '/thumbnails/thumb5.jpg', year: '2023', orientation: 'landscape', color: '#EF4444' },
-  { id: 6, title: 'Motion Graphics Reel', category: 'Animation', video: '/videos/6.mp4', thumbnail: '/thumbnails/thumb6.jpg', year: '2023', orientation: 'portrait', color: '#EC4899' },
-  { id: 7, title: 'Product Launch Film', category: 'Commercial', video: '/videos/7.mp4', thumbnail: '/thumbnails/thumb7.jpg', year: '2024', orientation: 'landscape', color: '#6366F1' },
+  { id: 1, title: 'Creative Production', category: 'Commercial / AI', youtubeId: 'iVGTb5L56_U', thumbnail: '/thumbnails/thumb1.jpg', year: '2024', orientation: 'landscape', color: '#8B5CF6' },
+  { id: 2, title: 'Brand Campaign', category: 'Brand Film', youtubeId: 'EgRRRKSXxzg', thumbnail: '/thumbnails/thumb2.jpg', year: '2024', orientation: 'portrait', color: '#3B82F6', isShort: true },
+  { id: 3, title: 'AI-Powered Commercial', category: 'AI Video', youtubeId: '8-YxCmFjRLA', thumbnail: '/thumbnails/thumb3.jpg', year: '2024', orientation: 'portrait', color: '#10B981', isShort: true },
+  { id: 4, title: 'Social Media Series', category: 'Social Content', youtubeId: 'vrYuv7i9HUM', thumbnail: '/thumbnails/thumb4.jpg', year: '2023', orientation: 'landscape', color: '#F59E0B' },
+  { id: 5, title: 'Corporate Documentary', category: 'Documentary', youtubeId: 'K2H-thz48TI', thumbnail: '/thumbnails/thumb5.jpg', year: '2023', orientation: 'landscape', color: '#EF4444' },
+  { id: 7, title: 'Product Launch Film', category: 'Commercial', youtubeId: 'Jmonxy8U3mU', thumbnail: '/thumbnails/thumb7.jpg', year: '2024', orientation: 'landscape', color: '#6366F1' },
 ]
 
 const stats = [
@@ -287,17 +286,14 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
 }
 
 // ============================================
-// VIDEO MODAL
+// VIDEO MODAL - YouTube Embed
 // ============================================
 function VideoModal({ project, onClose }: { project: typeof projects[0] | null; onClose: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  
   useEffect(() => {
     if (project) {
       document.body.style.overflow = 'hidden'
       const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
       window.addEventListener('keydown', handleEsc)
-      if (videoRef.current) videoRef.current.play()
       return () => {
         document.body.style.overflow = ''
         window.removeEventListener('keydown', handleEsc)
@@ -306,6 +302,11 @@ function VideoModal({ project, onClose }: { project: typeof projects[0] | null; 
   }, [project, onClose])
 
   if (!project) return null
+
+  // YouTube embed URL
+  const embedUrl = project.isShort 
+    ? `https://www.youtube.com/embed/${project.youtubeId}?autoplay=1&loop=1&playlist=${project.youtubeId}`
+    : `https://www.youtube.com/embed/${project.youtubeId}?autoplay=1`
 
   return (
     <motion.div
@@ -329,7 +330,7 @@ function VideoModal({ project, onClose }: { project: typeof projects[0] | null; 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className={project.orientation === 'portrait' ? 'w-full max-w-md' : 'w-full max-w-5xl'}
+        className={project.isShort ? 'w-full max-w-sm' : 'w-full max-w-5xl'}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center mb-6">
@@ -341,14 +342,15 @@ function VideoModal({ project, onClose }: { project: typeof projects[0] | null; 
           className="relative rounded-3xl overflow-hidden border border-white/10"
           style={{ boxShadow: `0 30px 80px -20px ${project.color}50` }}
         >
-          <video
-            ref={videoRef}
-            src={project.video}
-            poster={project.thumbnail}
-            controls
-            playsInline
-            className="w-full h-auto max-h-[70vh]"
-          />
+          <div className={project.isShort ? 'aspect-[9/16]' : 'aspect-video'}>
+            <iframe
+              src={embedUrl}
+              title={project.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
         </div>
       </motion.div>
     </motion.div>
