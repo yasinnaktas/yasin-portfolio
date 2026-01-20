@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 // DATA
 // ============================================
 const projects = [
+  { id: 1, title: 'AI Creative Project', category: 'Reklam Filmi', youtubeId: 'KooyeFCgugQ', thumbnail: 'https://img.youtube.com/vi/KooyeFCgugQ/maxresdefault.jpg', year: '2026', orientation: 'landscape', color: '#8B5CF6' },
   { id: 2, title: 'Brand Campaign', category: 'Brand Film', youtubeId: 'EgRRRKSXxzg', thumbnail: '/thumbnails/thumb2.jpg', year: '2024', orientation: 'portrait', color: '#3B82F6', isShort: true },
   { id: 3, title: 'AI-Powered Commercial', category: 'AI Video', youtubeId: '8-YxCmFjRLA', thumbnail: '/thumbnails/thumb3.jpg', year: '2024', orientation: 'portrait', color: '#10B981', isShort: true },
   { id: 4, title: 'Social Media Series', category: 'Social Content', youtubeId: 'vrYuv7i9HUM', thumbnail: '/thumbnails/thumb4.jpg', year: '2023', orientation: 'landscape', color: '#F59E0B' },
