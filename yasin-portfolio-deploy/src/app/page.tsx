@@ -8,6 +8,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 // ============================================
 const projects = [
   { id: 1, title: 'AI Creative Project', category: 'Reklam Filmi', youtubeId: 'KooyeFCgugQ', thumbnail: 'https://img.youtube.com/vi/KooyeFCgugQ/maxresdefault.jpg', year: '2026', orientation: 'landscape', color: '#8B5CF6' },
+  { id: 8, title: 'Brand Film', category: 'AI Video', youtubeId: 'AKoHR01gtTo', thumbnail: 'https://img.youtube.com/vi/AKoHR01gtTo/maxresdefault.jpg', year: '2026', orientation: 'landscape', color: '#EC4899' },
   { id: 2, title: 'Brand Campaign', category: 'Brand Film', youtubeId: 'EgRRRKSXxzg', thumbnail: '/thumbnails/thumb2.jpg', year: '2024', orientation: 'portrait', color: '#3B82F6', isShort: true },
   { id: 3, title: 'AI-Powered Commercial', category: 'AI Video', youtubeId: '8-YxCmFjRLA', thumbnail: '/thumbnails/thumb3.jpg', year: '2024', orientation: 'portrait', color: '#10B981', isShort: true },
   { id: 4, title: 'Social Media Series', category: 'Social Content', youtubeId: 'vrYuv7i9HUM', thumbnail: '/thumbnails/thumb4.jpg', year: '2023', orientation: 'landscape', color: '#F59E0B' },
@@ -784,8 +785,8 @@ function AboutSection() {
           className="text-center mb-12 md:mb-16"
         >
           <span className="text-emerald-500 text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block">Hakkımda</span>
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 font-playfair italic">
-            Medya ve <span className="text-outline not-italic">Teknolojinin</span> Kesişimi
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
+            Medya ve <span className="text-emerald-400">Teknolojinin</span> Kesişimi
           </h2>
           <p className="text-white/50 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             Turkuvaz Medya'da 4 yıl boyunca Kreatif Videographer olarak görev aldım. 
@@ -892,7 +893,7 @@ function ContactSection() {
           <span className="text-emerald-500 text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block">İletişim</span>
           <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6">
             Birlikte<br />
-            <span className="text-outline">Çalışalım</span>
+            <span className="text-emerald-400">Çalışalım</span>
           </h2>
           <p className="text-white/40 text-sm md:text-lg mb-8 md:mb-12 max-w-lg mx-auto px-4">
             Yeni projeler, iş birlikleri veya sadece merhaba demek için.
@@ -921,7 +922,6 @@ function ContactSection() {
             {[
               { href: 'https://linkedin.com/in/yasinakkts', label: 'LinkedIn' },
               { href: 'https://instagram.com/creativetouchss', label: 'Instagram' },
-            
             ].map((link) => (
               <a
                 key={link.label}
