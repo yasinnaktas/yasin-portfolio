@@ -6,12 +6,12 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const instrument = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-instrument' })
 
 export const metadata: Metadata = {
-  title: 'Yasin Aktaş | Creative Producer',
-  description: 'Video prodüksiyon, yapay zeka destekli içerik ve iOS uygulama geliştirme — 5+ yıllık deneyim, 1000+ marka',
+  title: 'Yasin Aktaş | Head of Creative',
+  description: 'Kreatif liderlik, performance marketing ve yapay zeka — 1000+ marka, 10 kişilik ekip yönetimi, başarılı exit ve iOS ürünleri',
   keywords: ['video prodüksiyon', 'creative producer', 'yapay zeka', 'iOS uygulama', 'reklam filmi', 'İstanbul'],
   openGraph: {
-    title: 'Yasin Aktaş | Creative Producer',
-    description: 'Video prodüksiyon, yapay zeka destekli içerik ve iOS uygulama geliştirme — 5+ yıllık deneyim, 1000+ marka',
+    title: 'Yasin Aktaş | Head of Creative',
+    description: 'Kreatif liderlik, performance marketing ve yapay zeka — 1000+ marka, 10 kişilik ekip yönetimi, başarılı exit ve iOS ürünleri',
     locale: 'tr_TR',
     type: 'website',
   },
