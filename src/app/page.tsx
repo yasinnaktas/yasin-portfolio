@@ -22,29 +22,32 @@ const copy = {
     marquee: ['Kreatif Liderlik', 'Ekip Yönetimi', 'Performance Marketing', 'AI Strateji', 'Video Prodüksiyon', 'iOS Ürün Geliştirme', 'Bütçe Yönetimi', 'Marka Kampanyaları', 'İçerik Stratejisi', 'Post-Prodüksiyon'],
     impact: {
       kicker: 'Rakamlarla Etki',
-      title: 'Karar Verici Olarak Katkım',
-      chartViewsTitle: 'Toplam İzlenme Büyümesi',
-      chartViewsDesc: '2021-2026 arası yönettiğim içeriklerin kümülatif izlenme performansı',
-      chartEngTitle: 'Etkileşim Optimizasyonu',
-      chartEngDesc: 'Veri odaklı iterasyon döngüleriyle optimize edilen kampanyalarda etkileşim artışı',
-      engBefore: 'Standart kampanya',
-      engAfter: 'Optimize edilmiş',
-      statBrands: 'Marka', statBrandsDesc: 'Uçtan uca hizmet',
-      statViews: 'İzlenme', statViewsDesc: 'Toplam organik + paid',
-      statVideos: 'Video', statVideosDesc: 'Teslim edilen iş',
-      statTeam: 'Kişilik Ekip', statTeamDesc: 'Doğrudan yönetim',
-      statEngDesc: 'veri odaklı iterasyonla optimize edilen kampanyalarda etkileşim artışı',
+      title: 'Kariyerim Boyunca Yarattığım Değer',
+      chartViewsTitle: 'İçeriklerimin Ulaştığı Toplam İzlenme',
+      chartViewsDesc: 'Turkuvaz Medya ve Creative Touch Productions dönemlerinde ürettiğim ve yönettiğim içeriklerin yıllara göre toplam izlenme sayısı (milyon)',
+      chartEngTitle: 'Kampanya Optimizasyonunun Sonucu',
+      chartEngDesc: 'Aynı bütçeyle yürütülen kampanyalarda, veri analiziyle yaptığım iyileştirmeler etkileşimi ortalama %35 artırdı (100 = optimizasyon öncesi seviye)',
+      engBefore: 'Optimizasyon öncesi',
+      engAfter: 'Optimizasyon sonrası',
+      statBrands: 'Marka', statBrandsDesc: 'Hizmet verilen toplam marka sayısı',
+      statViews: 'İzlenme', statViewsDesc: 'İçeriklerin ulaştığı toplam izlenme',
+      statVideos: 'Video', statVideosDesc: 'Teslim edilen tamamlanmış video',
+      statTeam: 'Kişilik Ekip', statTeamDesc: 'Doğrudan yönettiğim ekip',
+      statEngDesc: 'optimize edilen kampanyalarda ortalama etkileşim artışı',
     },
     projects: { kicker: 'Portföy', title: 'Seçili İşler', all: 'Tümü', featured: 'Öne Çıkan' },
     products: {
       kicker: 'Ürünler',
       title: "Fikirden App Store'a",
-      desc: 'Medya birikimini ürün vizyonuyla birleştiriyorum: yapay zeka destekli geliştirme süreçleriyle iOS uygulamalarını uçtan uca hayata geçiriyorum.',
-      speegoDesc: "Cepte konuşma koçu. 30 saniyelik video kaydını analiz edip ton, akıcılık, beden dili ve netlik üzerine dürüst, kişiselleştirilmiş rapor sunan AI destekli iOS uygulaması. Abonelik modeliyle App Store'da yayında.",
-      speegoTag: 'AI Konuşma Koçu · iOS',
-      droneDesc: 'Drone uçuş deneyimini mobile taşıyan simülasyon uygulaması. Prodüksiyon sahasındaki gerçek drone tecrübesinin ürünleşmiş hali.',
-      droneTag: 'Simülasyon · iOS',
-      live: "App Store'da",
+      desc: 'Medya ve prodüksiyon birikimini ürün vizyonuyla birleştirerek, yapay zeka destekli geliştirme süreçleriyle iOS uygulamalarını konseptten yayına uçtan uca hayata geçiriyorum.',
+      apps: [
+        { name: 'Speego', tag: 'Yapay Zeka Destekli Konuşma Koçu · iOS', icon: '/apps/speego.png', accent: '#3B82F6',
+          desc: '30 saniyelik video kaydı üzerinden ton, akıcılık, beden dili ve netlik analizi yapan yapay zeka destekli konuşma koçu. Mülakat, sunum ve topluluk önünde konuşma hazırlığı için kişiselleştirilmiş değerlendirme ve gelişim önerileri sunar. Abonelik modeliyle yayındadır.' },
+        { name: 'Sanal Drone', tag: 'Gayrimenkul Pazarlama Aracı · iOS', icon: '/apps/sanal-drone.png', accent: '#22C55E',
+          desc: 'Arsa ve gayrimenkul ilanlarını saniyeler içinde profesyonel pazarlama içeriğine dönüştüren yapay zeka destekli araç. Harita üzerinde çizilen arsa sınırından otomatik alan hesabı, sosyal medyaya hazır ilan görselleri ve gerçekçi drone tanıtım videoları üretir. Emlak danışmanları ve gayrimenkul ofisleri için geliştirilmiştir.' },
+        { name: 'Someday: Sealed Messages', tag: 'Uçtan Uca Şifreli Mesaj Kasası · iOS', icon: '/apps/someday.png', accent: '#F59E0B',
+          desc: 'Sevdiklerinize video, ses ve mektup mesajları kaydedip belirlediğiniz tarihte veya güvenilir kişilerin onayıyla ileten dijital mesaj kasası. Tüm içerik cihaz üzerinde uçtan uca şifrelenir; sunucusuz mimarisiyle gizlilik esaslı tasarlanmıştır. Tek seferlik satın alma modeliyle sunulur.' },
+      ],
     },
     about: {
       kicker: 'Hakkımda',
@@ -107,29 +110,32 @@ const copy = {
     marquee: ['Creative Leadership', 'Team Management', 'Performance Marketing', 'AI Strategy', 'Video Production', 'iOS Product Development', 'Budget Ownership', 'Brand Campaigns', 'Content Strategy', 'Post-Production'],
     impact: {
       kicker: 'Impact in Numbers',
-      title: 'What I Deliver as a Decision-Maker',
-      chartViewsTitle: 'Cumulative View Growth',
-      chartViewsDesc: 'Cumulative view performance of content under my direction, 2021-2026',
-      chartEngTitle: 'Engagement Optimization',
-      chartEngDesc: 'Engagement uplift on campaigns optimized through data-driven iteration',
-      engBefore: 'Standard campaign',
-      engAfter: 'Optimized',
-      statBrands: 'Brands', statBrandsDesc: 'Served end-to-end',
-      statViews: 'Views', statViewsDesc: 'Organic + paid total',
-      statVideos: 'Videos', statVideosDesc: 'Delivered assets',
-      statTeam: 'Person Team', statTeamDesc: 'Direct management',
-      statEngDesc: 'engagement lift on campaigns optimized through data-driven iteration',
+      title: 'Value Delivered Throughout My Career',
+      chartViewsTitle: 'Total Views Reached by My Content',
+      chartViewsDesc: 'Total views (in millions) of content I produced and directed across Turkuvaz Media and Creative Touch Productions, by year',
+      chartEngTitle: 'Result of Campaign Optimization',
+      chartEngDesc: 'On campaigns run with the same budget, my data-driven improvements increased engagement by an average of 35% (100 = pre-optimization baseline)',
+      engBefore: 'Before optimization',
+      engAfter: 'After optimization',
+      statBrands: 'Brands', statBrandsDesc: 'Total brands served',
+      statViews: 'Views', statViewsDesc: 'Total views reached by content',
+      statVideos: 'Videos', statVideosDesc: 'Completed videos delivered',
+      statTeam: 'Person Team', statTeamDesc: 'Team under my direct management',
+      statEngDesc: 'average engagement increase on optimized campaigns',
     },
     projects: { kicker: 'Portfolio', title: 'Selected Work', all: 'All', featured: 'Featured' },
     products: {
       kicker: 'Products',
       title: 'From Idea to the App Store',
-      desc: 'I combine media expertise with product vision — shipping iOS apps end-to-end through AI-assisted development workflows.',
-      speegoDesc: 'A pocket speaking coach. Records a 30-second video and delivers an honest, personalized AI report on tone, fluency, body language and clarity. Live on the App Store with a subscription model.',
-      speegoTag: 'AI Speaking Coach · iOS',
-      droneDesc: 'A simulation app bringing the drone flight experience to mobile — real production-field drone expertise, turned into a product.',
-      droneTag: 'Simulation · iOS',
-      live: 'On the App Store',
+      desc: 'Combining media and production expertise with product vision, I take iOS applications from concept to release through AI-assisted development workflows.',
+      apps: [
+        { name: 'Speego', tag: 'AI-Powered Speaking Coach · iOS', icon: '/apps/speego.png', accent: '#3B82F6',
+          desc: 'An AI-powered speaking coach that analyzes tone, fluency, body language and clarity from a 30-second video recording. Provides personalized assessment and improvement drills for interview, presentation and public-speaking preparation. Available on a subscription model.' },
+        { name: 'Sanal Drone', tag: 'Real Estate Marketing Tool · iOS', icon: '/apps/sanal-drone.png', accent: '#22C55E',
+          desc: 'An AI-powered tool that turns land and real estate listings into professional marketing content in seconds. Generates automatic area calculation from map-drawn parcel boundaries, social-ready listing visuals and realistic aerial promo videos. Built for real estate agents and agencies.' },
+        { name: 'Someday: Sealed Messages', tag: 'End-to-End Encrypted Message Vault · iOS', icon: '/apps/someday.png', accent: '#F59E0B',
+          desc: 'A digital message vault for recording video, voice and letter messages to loved ones, delivered on a chosen date or upon guardian confirmation. All content is end-to-end encrypted on device with a serverless, privacy-first architecture. Offered as a one-time purchase.' },
+      ],
     },
     about: {
       kicker: 'About',
@@ -745,27 +751,6 @@ function ImpactSection({ t }: { t: typeof copy.tr }) {
 // PRODUCTS SECTION — iOS apps
 // ============================================
 function ProductsSection({ t }: { t: typeof copy.tr }) {
-  const apps = [
-    {
-      name: 'Speego',
-      tag: t.products.speegoTag,
-      desc: t.products.speegoDesc,
-      icon: '🎤',
-      gradient: 'from-violet-600/20 to-fuchsia-600/10',
-      border: 'hover:border-violet-500/40',
-      accent: '#A78BFA',
-    },
-    {
-      name: 'Sanal Drone',
-      tag: t.products.droneTag,
-      desc: t.products.droneDesc,
-      icon: '🚁',
-      gradient: 'from-sky-600/20 to-cyan-600/10',
-      border: 'hover:border-sky-500/40',
-      accent: '#38BDF8',
-    },
-  ]
-
   return (
     <CinematicSection id="urunler" className="py-16 md:py-32 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
@@ -781,31 +766,30 @@ function ProductsSection({ t }: { t: typeof copy.tr }) {
           </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {apps.map((app, i) => (
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+          {t.products.apps.map((app, i) => (
             <motion.div
               key={app.name}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.7, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className={`group relative h-full p-6 md:p-10 rounded-2xl md:rounded-3xl bg-gradient-to-br ${app.gradient} border border-white/[0.08] ${app.border} transition-all duration-500 overflow-hidden`}>
-                <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-20 blur-3xl transition-opacity duration-500 group-hover:opacity-40" style={{ background: app.accent }} />
+              <div className="group relative h-full p-6 md:p-8 rounded-2xl md:rounded-3xl bg-white/[0.02] border border-white/[0.08] hover:border-white/[0.2] transition-all duration-500 overflow-hidden">
+                <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-15 blur-3xl transition-opacity duration-500 group-hover:opacity-30" style={{ background: app.accent }} />
 
                 <div className="relative">
-                  <div className="flex items-center justify-between mb-6">
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: -5 }}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-2xl liquid-glass flex items-center justify-center text-3xl md:text-4xl"
-                    >
-                      {app.icon}
-                    </motion.div>
-                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.06, rotate: -3 }}
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden mb-6 border border-white/10"
+                    style={{ boxShadow: `0 12px 32px -12px ${app.accent}60` }}
+                  >
+                    <img src={app.icon} alt={`${app.name} uygulama ikonu`} className="w-full h-full object-cover" />
+                  </motion.div>
 
-                  <h3 className="text-2xl md:text-4xl font-bold text-white mb-1">{app.name}</h3>
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-1">{app.name}</h3>
                   <p className="text-xs md:text-sm font-medium mb-4" style={{ color: app.accent }}>{app.tag}</p>
-                  <p className="text-white/50 text-sm md:text-base leading-relaxed">{app.desc}</p>
+                  <p className="text-white/50 text-sm leading-relaxed">{app.desc}</p>
                 </div>
               </div>
             </motion.div>
