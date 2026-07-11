@@ -12,17 +12,17 @@ const copy = {
   tr: {
     nav: { projects: 'Projeler', impact: 'Etki', products: 'Ürünler', about: 'Hakkımda', experience: 'Deneyim', contact: 'İletişim' },
     hero: {
-      location: 'İstanbul — Kreatif Liderlik & Yapay Zeka',
+      location: 'İstanbul, Türkiye',
       title1: 'HEAD OF',
       title2: 'CREATIVE',
-      sub: "Video prodüksiyonu yalnızca çekim olarak değil, stratejiden yayına uzanan bütünsel bir üretim süreci olarak ele alıyorum. Beş yılı aşkın sürede 1000'den fazla markaya uçtan uca hizmet sağladım; 10 kişilik kreatif ekip yönettim ve kurduğum ajansı başarılı bir exit ile devrettim. Bugün ekipleri, bütçeleri ve yapay zeka destekli üretim süreçlerini yöneten karar verici pozisyonlara odaklanıyorum.",
+      sub: "Beş yılı aşkın süredir video prodüksiyon ve medya sektöründeyim. Sahada çekim ve kurguyla başlayan kariyerimde, kurduğum Creative Touch Productions reklam ajansıyla içerik üreten değil, süreci yöneten bir konuma geçtim: 10 kişilik ekiple 1000'den fazla markaya hizmet verdik ve ajans Ocak 2026'da Hamburg merkezli bir teknoloji şirketi tarafından satın alındı. Bugün teknik üretim gücümü ekip yönetimi, içerik stratejisi ve yapay zeka çözümleriyle birleştirerek kurumsal yapılarda yönetici pozisyonlarına odaklanıyorum.",
       cta1: 'Etkiyi Gör',
       cta2: 'Benimle Çalış',
     },
     marquee: ['Kreatif Liderlik', 'Ekip Yönetimi', 'Performance Marketing', 'AI Strateji', 'Video Prodüksiyon', 'iOS Ürün Geliştirme', 'Bütçe Yönetimi', 'Marka Kampanyaları', 'İçerik Stratejisi', 'Post-Prodüksiyon'],
     impact: {
-      kicker: 'Rakamlarla Etki',
-      title: 'Kariyerim Boyunca Yarattığım Değer',
+      kicker: 'Etki',
+      title: 'Sayılarla Deneyim',
       chartViewsTitle: 'İçeriklerimin Ulaştığı Toplam İzlenme',
       chartViewsDesc: 'Turkuvaz Medya ve Creative Touch Productions dönemlerinde ürettiğim ve yönettiğim içeriklerin yıllara göre toplam izlenme sayısı (milyon)',
       chartEngTitle: 'Kampanya Optimizasyonunun Sonucu',
@@ -100,17 +100,17 @@ const copy = {
   en: {
     nav: { projects: 'Work', impact: 'Impact', products: 'Products', about: 'About', experience: 'Experience', contact: 'Contact' },
     hero: {
-      location: 'Istanbul — Creative Leadership & AI',
+      location: 'Istanbul, Türkiye',
       title1: 'HEAD OF',
       title2: 'CREATIVE',
-      sub: "I treat video production not as shooting, but as an end-to-end process from strategy to distribution. Over 5+ years I delivered full-cycle creative for 1000+ brands, led a 10-person team, and exited the agency I founded to a Hamburg-based tech company. Today I focus on decision-making roles — leading teams, budgets and AI-powered production pipelines.",
+      sub: "I have spent over five years in video production and media. My career began in the field with camera and edit work, and evolved when I founded Creative Touch Productions: leading a 10-person team, we served 1000+ brands, and the agency was acquired by a Hamburg-based technology company in January 2026. Today I combine hands-on production expertise with team leadership, content strategy and AI solutions, focusing on executive roles within corporate organizations.",
       cta1: 'See the Impact',
       cta2: 'Work With Me',
     },
     marquee: ['Creative Leadership', 'Team Management', 'Performance Marketing', 'AI Strategy', 'Video Production', 'iOS Product Development', 'Budget Ownership', 'Brand Campaigns', 'Content Strategy', 'Post-Production'],
     impact: {
-      kicker: 'Impact in Numbers',
-      title: 'Value Delivered Throughout My Career',
+      kicker: 'Impact',
+      title: 'Experience in Numbers',
       chartViewsTitle: 'Total Views Reached by My Content',
       chartViewsDesc: 'Total views (in millions) of content I produced and directed across Turkuvaz Media and Creative Touch Productions, by year',
       chartEngTitle: 'Result of Campaign Optimization',
