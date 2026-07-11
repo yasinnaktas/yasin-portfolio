@@ -188,6 +188,16 @@ const copy = {
 } as const
 
 // ============================================
+// THUMBNAIL FALLBACK — maxresdefault yoksa hqdefault'a düş
+// ============================================
+const thumbFallback = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  const img = e.currentTarget
+  if (img.src.includes('maxresdefault')) {
+    img.src = img.src.replace('maxresdefault', 'hqdefault')
+  }
+}
+
+// ============================================
 // PROJECT DATA
 // ============================================
 const projects = [
@@ -341,6 +351,7 @@ function FloatingCard({ card, mx, my, scrollY }: { card: typeof floatingCards[0]
           <img
             src={card.src}
             alt=""
+            onError={thumbFallback}
             className={`w-full aspect-video object-cover ${card.blur ? 'blur-[2px] opacity-50' : 'opacity-90'}`}
             style={{ boxShadow: '0 30px 60px -20px rgba(0,0,0,0.8)' }}
           />
@@ -840,6 +851,7 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
         <img
           src={project.thumbnail}
           alt={project.title}
+          onError={thumbFallback}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
@@ -891,6 +903,7 @@ function FeaturedCard({ project, onSelect, label }: { project: typeof projects[0
         <img
           src={project.thumbnail}
           alt={project.title}
+          onError={thumbFallback}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
