@@ -92,7 +92,7 @@ const copy = {
     },
     contact: {
       kicker: 'İletişim', title1: 'Birlikte', title2: 'Çalışalım',
-      desc: 'Liderlik pozisyonları, danışmanlık veya iş birlikleri için.',
+      desc: 'Danışmanlık veya iş birlikleri için.',
       email: 'Email Gönder',
     },
     footer: { rights: '© 2026 Yasin Aktaş', from: "İstanbul'dan sevgiler ile" },
@@ -180,7 +180,7 @@ const copy = {
     },
     contact: {
       kicker: 'Contact', title1: "Let's Work", title2: 'Together',
-      desc: 'For leadership roles, consultancy or collaborations.',
+      desc: 'For consultancy or collaborations.',
       email: 'Send Email',
     },
     footer: { rights: '© 2026 Yasin Aktaş', from: 'With love from Istanbul' },
