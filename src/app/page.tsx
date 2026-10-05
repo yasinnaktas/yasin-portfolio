@@ -822,6 +822,7 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
   const springY = useSpring(rotateY, { stiffness: 200, damping: 20 })
 
   const handleMouse = (e: React.MouseEvent) => {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
     const rect = ref.current?.getBoundingClientRect()
     if (!rect) return
     const px = (e.clientX - rect.left) / rect.width - 0.5
@@ -833,9 +834,7 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
+      initial={false}
       transition={{ duration: 0.7, delay: (index % 3) * 0.12, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => onSelect(project)}
       className="group cursor-pointer"
@@ -845,14 +844,14 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
         ref={ref}
         onMouseMove={handleMouse}
         onMouseLeave={resetTilt}
-        style={{ rotateX: springX, rotateY: springY, boxShadow: `0 10px 40px -15px ${project.color}40`, transformStyle: 'preserve-3d' }}
+        style={{ rotateX: springX, rotateY: springY, boxShadow: `0 10px 40px -15px ${project.color}40` }}
         className="relative aspect-[4/3] rounded-xl md:rounded-3xl overflow-hidden"
       >
         <img
           src={project.thumbnail}
           alt={project.title}
           onError={thumbFallback}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
         <motion.div
@@ -862,7 +861,7 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
         <div className="absolute inset-0 rounded-xl md:rounded-3xl border border-white/10 group-hover:border-white/25 transition-colors" />
 
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="liquid-glass w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <div className="liquid-glass w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="ml-0.5">
               <polygon points="5,3 19,12 5,21" />
             </svg>
@@ -889,9 +888,7 @@ function VideoCard({ project, index, onSelect }: { project: typeof projects[0]; 
 function FeaturedCard({ project, onSelect, label }: { project: typeof projects[0]; onSelect: (p: typeof projects[0]) => void; label: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
+      initial={false}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => onSelect(project)}
       className="group cursor-pointer mb-3 md:mb-6"
@@ -904,7 +901,7 @@ function FeaturedCard({ project, onSelect, label }: { project: typeof projects[0
           src={project.thumbnail}
           alt={project.title}
           onError={thumbFallback}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] md:group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
         <div className="absolute inset-0 rounded-2xl md:rounded-3xl border border-white/10 group-hover:border-white/25 transition-colors" />
@@ -919,7 +916,7 @@ function FeaturedCard({ project, onSelect, label }: { project: typeof projects[0
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div
             whileHover={{ scale: 1.08 }}
-            className="liquid-glass w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+            className="liquid-glass w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="white" className="ml-1">
               <polygon points="5,3 19,12 5,21" />
@@ -981,7 +978,7 @@ function WorkSection({ onSelect, t }: { onSelect: (p: typeof projects[0]) => voi
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
