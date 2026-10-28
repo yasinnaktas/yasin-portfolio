@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, MotionValue } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView, MotionValue } from 'framer-motion'
 
 // ============================================
 // TYPES
@@ -128,6 +128,7 @@ const copy = {
       title: [['Seçili işler,\n'], ['2026.', 'mute']] as Parts,
       desc: 'Bir işe tıklayın, ortada büyüsün ve oynasın. Kapatınca ızgaraya dönün.',
       like: 'İzle',
+      unmute: 'Sesi aç',
       cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', ai: 'AI Video', doc: 'Belgesel' } as Record<CategoryKey, string>,
     },
     archive: {
@@ -159,7 +160,7 @@ const copy = {
     },
     band: { words: ['Reklam Filmi', '3D Animasyon', 'Drone', 'AI Video', 'Restoran Filmleri', 'Motion Graphic'], caption: ['2026', 'portfolyo'] },
     closing: {
-      a: { title: [['Birlikte\n'], ['çalışalım.']] as Parts, desc: 'Kurumsal bir yapıda yönetici pozisyonunda değer üretmeyi hedefliyorum.', cta: 'Email gönder' },
+      a: { title: [['Birlikte\n'], ['çalışalım.']] as Parts, desc: 'Değer katabileceğim ve birlikte büyüyebileceğim kurumlarla yeni projelere açığım.', cta: 'Email gönder' },
       b: { title: [['Kariyerim\n'], ['LinkedIn’de.']] as Parts, desc: 'Deneyimlerim ve güncel işlerim LinkedIn profilimde.', cta: 'LinkedIn' },
     },
     footer: {
@@ -230,6 +231,7 @@ const copy = {
       title: [['Selected work,\n'], ['2026.', 'mute']] as Parts,
       desc: 'Click a piece and it grows into the centre and plays. Close it to return to the grid.',
       like: 'Watch',
+      unmute: 'Unmute',
       cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', ai: 'AI Video', doc: 'Documentary' } as Record<CategoryKey, string>,
     },
     archive: {
@@ -261,7 +263,7 @@ const copy = {
     },
     band: { words: ['Ad Films', '3D Animation', 'Drone', 'AI Video', 'Restaurant Films', 'Motion Graphics'], caption: ['2026', 'portfolio'] },
     closing: {
-      a: { title: [['Let’s work\n'], ['together.']] as Parts, desc: 'I’m looking to create value in a leadership role within a corporate structure.', cta: 'Send email' },
+      a: { title: [['Let’s work\n'], ['together.']] as Parts, desc: 'I’m open to new projects with teams where I can add value and keep growing.', cta: 'Send email' },
       b: { title: [['My career\n'], ['on LinkedIn.']] as Parts, desc: 'My experience and recent work are on my LinkedIn profile.', cta: 'LinkedIn' },
     },
     footer: {
@@ -284,6 +286,9 @@ const wrap = 'max-w-[1120px] mx-auto px-5 md:px-8'
 const btnDark = 'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-ink text-white text-[12px] font-medium hover:bg-black/75 transition-colors'
 const btnGhost = 'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full text-[12px] font-medium text-ink hover:bg-black/[0.05] transition-colors'
 const TONE: Record<Tone, string> = { ink: 'text-ink', mute: 'text-mute', maroon: 'text-maroon' }
+
+// True only for a real mouse; touch screens skip hover effects so one tap = one action
+const useCanHover = () => useMedia('(hover: hover) and (pointer: fine)')
 
 function useMedia(query: string) {
   const [match, setMatch] = useState(false)
@@ -354,10 +359,64 @@ function Reveal({ children, delay = 0, className = '', y = 24 }: { children: Rea
 
 // Hover lift lives on its own layer so it never inherits an entrance delay
 function Lift({ children, className = '', y = -10, scale = 1.03, rotate }: { children: React.ReactNode; className?: string; y?: number; scale?: number; rotate?: number }) {
+  const canHover = useCanHover()
   return (
-    <motion.div whileHover={{ y, scale, ...(rotate !== undefined ? { rotate } : {}) }} transition={HOVER} className={`will-change-transform ${className}`}>
+    <motion.div whileHover={canHover ? { y, scale, ...(rotate !== undefined ? { rotate } : {}) } : undefined} transition={HOVER} className={`will-change-transform ${className}`}>
       {children}
     </motion.div>
+  )
+}
+
+// Muted, inline, looping background video. React doesn't reliably write the `muted`
+// attribute and iOS won't autoplay without it, so it's set on the element directly.
+function AutoVideo({ src, poster: still, className = '' }: { src: string; poster?: string; className?: string }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    v.muted = true
+    v.defaultMuted = true
+    v.setAttribute('muted', '')
+    v.setAttribute('playsinline', '')
+    v.play().catch(() => {})
+  }, [src])
+  return <video ref={ref} src={src} poster={still} muted loop playsInline autoPlay preload="metadata" className={className} />
+}
+
+// Click-to-watch player. The click counts as a gesture, so it first tries with sound;
+// if the browser still refuses (common on phones), it plays muted and offers unmute.
+function Player({ src, poster: still, className = '', unmuteLabel }: { src: string; poster?: string; className?: string; unmuteLabel: string }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  const [muted, setMuted] = useState(false)
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    v.muted = false
+    setMuted(false)
+    v.play().catch(() => {
+      v.muted = true
+      setMuted(true)
+      v.play().catch(() => {})
+    })
+    const sync = () => setMuted(v.muted)
+    v.addEventListener('volumechange', sync)
+    return () => v.removeEventListener('volumechange', sync)
+  }, [src])
+  const unmute = () => {
+    const v = ref.current
+    if (!v) return
+    v.muted = false
+    v.play().catch(() => {})
+  }
+  return (
+    <div className="relative w-full h-full">
+      <video ref={ref} src={src} poster={still} controls playsInline loop preload="auto" className={className} />
+      {muted && (
+        <button onClick={unmute} className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-white text-ink text-[12px] font-semibold shadow-lg">
+          <Icon name="sound" size={14} /> {unmuteLabel}
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -391,6 +450,7 @@ const ICONS: Record<string, React.ReactNode> = {
   arrowU: <path d="M6 15l6-6 6 6" />,
   arrowD: <path d="M6 9l6 6 6-6" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  sound: <><path d="M4 9v6h4l5 4V5L8 9z" /><path d="M16 9a4 4 0 010 6M18.5 6.5a7.5 7.5 0 010 11" /></>,
   dots: <><circle cx="5" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="12" r="1" fill="currentColor" /><circle cx="19" cy="12" r="1" fill="currentColor" /></>,
 }
 
@@ -412,7 +472,7 @@ function IconDot({ name, className = '', size = 'w-10 h-10' }: { name: string; c
 
 function RoundBtn({ icon, onClick, light = false, label }: { icon: string; onClick?: () => void; light?: boolean; label: string }) {
   return (
-    <button onClick={onClick} aria-label={label} className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${light ? 'bg-white text-ink hover:bg-white/80' : 'bg-white/70 border border-line text-ink/70 hover:text-ink'}`}>
+    <button onClick={onClick} aria-label={label} className={`w-9 h-9 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-colors ${light ? 'bg-white text-ink hover:bg-white/80' : 'bg-white/70 border border-line text-ink/70 hover:text-ink'}`}>
       <Icon name={icon} size={13} />
     </button>
   )
@@ -490,6 +550,7 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
   const tilt = [-7, 4, -3, 2, -4, 5, 8]
   // Raise the hovered card instantly; animating zIndex makes it slide through its neighbours
   const [hover, setHover] = useState<number | null>(null)
+  const canHover = useCanHover()
 
   return (
     <section className="relative pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden">
@@ -507,7 +568,7 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
                 initial={{ x: 0, y: 40, rotate: 0, opacity: 0, scale: 0.9 }}
                 animate={{ x: o * step, y: Math.abs(o) * 4, rotate: tilt[i], opacity: 1, scale: 1 }}
                 transition={{ ...SPRING, delay: 0.45 + Math.abs(o) * 0.08, opacity: { duration: 0.5, delay: 0.45 } }}
-                onHoverStart={() => setHover(i)}
+                onHoverStart={() => canHover && setHover(i)}
                 onHoverEnd={() => setHover(null)}
                 className="absolute left-1/2 top-1/2 -ml-[44px] -mt-[55px] md:-ml-[72px] md:-mt-[88px] w-[88px] h-[110px] md:w-[144px] md:h-[176px] will-change-transform"
                 style={{ zIndex: hover === i ? 50 : 10 + i }}
@@ -546,6 +607,8 @@ const cascadeSets = [
 function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
   const [set, setSet] = useState(0)
   const cards = cascadeSets[set]
+  const deckRef = useRef<HTMLDivElement>(null)
+  const deckIn = useInView(deckRef, { once: true, margin: '-60px' })
   const pos = [
     { l: '0%', t: '6%' }, { l: '19%', t: '16%' }, { l: '38%', t: '26%' }, { l: '56%', t: '34%' }, { l: '73%', t: '41%' },
   ]
@@ -562,17 +625,21 @@ function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
         </div>
 
         <div className="relative">
-          <div className="relative aspect-[1.55/1]">
+          {/* The deck is observed as a whole and the flag persists, so cards that start
+              off-screen, and cards swapped in later with the arrows, still get dealt */}
+          <div ref={deckRef} className="relative aspect-[1.55/1]">
             <AnimatePresence mode="popLayout">
               {cards.map((slug, i) => (
                 <motion.button
                   key={`${set}-${slug}`}
                   onClick={() => onPlay(bySlug(slug))}
-                  initial={{ opacity: 0, x: `${-56 * i}%`, y: `${-30 * i}%`, rotate: -4 }}
-                  whileInView={{ opacity: 1, x: '0%', y: '0%', rotate: 0 }}
+                  initial="hidden"
+                  animate={deckIn ? 'shown' : 'hidden'}
+                  variants={{
+                    hidden: { opacity: 0, x: `${-56 * i}%`, y: `${-30 * i}%`, rotate: -4 },
+                    shown: { opacity: 1, x: '0%', y: '0%', rotate: 0, transition: { ...SPRING, delay: i * 0.07 } },
+                  }}
                   exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.25 } }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ ...SPRING, delay: i * 0.07 }}
                   className="absolute w-[34%] aspect-[4/3.4] will-change-transform"
                   style={{ left: pos[i].l, top: pos[i].t, zIndex: i + 1 }}
                   aria-label={bySlug(slug).client}
@@ -584,7 +651,7 @@ function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
               ))}
             </AnimatePresence>
           </div>
-          <div className="absolute right-0 top-[8%] flex flex-col gap-1.5">
+          <div className="absolute right-0 -bottom-12 md:bottom-auto md:top-[8%] flex md:flex-col gap-1.5">
             <RoundBtn icon="arrowU" label="Previous" onClick={() => setSet((set - 1 + cascadeSets.length) % cascadeSets.length)} />
             <RoundBtn icon="arrowD" label="Next" onClick={() => setSet((set + 1) % cascadeSets.length)} />
           </div>
@@ -615,20 +682,16 @@ function ReelSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
         <Reveal y={40}>
           <div className="relative overflow-hidden rounded-[14px] md:rounded-[18px] bg-flame aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.45/1]">
             <AnimatePresence mode="popLayout">
-              <motion.video
+              <motion.div
                 key={w.slug}
-                src={vsrc(w.slug)}
-                poster={poster(w.slug)}
-                autoPlay
-                muted
-                loop
-                playsInline
                 initial={{ opacity: 0, scale: 1.06 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.9, ease: EASE }}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+                className="absolute inset-0"
+              >
+                <AutoVideo src={vsrc(w.slug)} poster={poster(w.slug)} className="absolute inset-0 w-full h-full object-cover" />
+              </motion.div>
             </AnimatePresence>
             <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
             <div className="absolute top-4 left-4 md:top-6 md:left-6 flex flex-col gap-1">
@@ -728,6 +791,7 @@ function StatementSection({ t }: { t: Copy }) {
 const stairSlugs = ['13-mr-hakans-jeddah', '15-mamush-ribeye', '12-claudie-miami', '07-ibb-bulgur-palas-drone', '02-kamuran-kruvasan']
 
 function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
+  const md = useMedia('(min-width: 768px)')
   const [tab, setTab] = useState(0)
   const app = t.products.apps[tab]
   const iconSpots = [
@@ -740,8 +804,9 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
     <section id="urunler" className="py-16 md:py-24">
       {/* Staircase of work */}
       <div className={`${wrap} relative mb-20 md:mb-28`}>
-        <div className="relative aspect-[2.2/1] md:aspect-[2.6/1]">
-          <Reveal className={`absolute left-0 top-[2%] z-20 w-[150px] md:w-[190px] rounded-[14px] bg-white p-3.5 md:p-4 ${CARD}`}>
+        {/* On phones the note sits above the steps; from md up it floats over the first step's left */}
+        <motion.div className="relative aspect-[1.7/1] md:aspect-[2.6/1] mt-[150px] md:mt-0" initial="hidden" whileInView="shown" viewport={{ once: true, margin: '-80px' }}>
+          <Reveal className={`absolute left-0 -top-[140px] md:top-[2%] z-20 w-[180px] md:w-[190px] rounded-[14px] bg-white p-3.5 md:p-4 ${CARD}`}>
             <div className="flex items-start justify-between mb-6">
               <p className="text-[12px] md:text-[13px] font-bold leading-tight tracking-[-0.02em]">{t.stair.title}</p>
               <span className="w-5 h-5 rounded-full bg-ink text-white flex items-center justify-center shrink-0"><Icon name="play" size={11} /></span>
@@ -753,12 +818,12 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
             <motion.button
               key={slug}
               onClick={() => onPlay(bySlug(slug))}
-              initial={{ opacity: 0, x: `${-94 * i}%`, y: `${-22 * i}%` }}
-              whileInView={{ opacity: 1, x: '0%', y: '0%' }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ ...SPRING, delay: 0.1 + i * 0.08 }}
-              className="absolute w-[17%] aspect-[4/5] will-change-transform"
-              style={{ left: `${22 + i * 16}%`, top: `${8 + i * 12}%`, zIndex: i + 1 }}
+              variants={{
+                hidden: { opacity: 0, x: `${-94 * i}%`, y: `${-22 * i}%` },
+                shown: { opacity: 1, x: '0%', y: '0%', transition: { ...SPRING, delay: 0.1 + i * 0.08 } },
+              }}
+              className="absolute w-[22%] md:w-[17%] aspect-[4/5] will-change-transform"
+              style={{ left: md ? `${22 + i * 16}%` : `${i * 19.5}%`, top: md ? `${8 + i * 12}%` : `${i * 10}%`, zIndex: i + 1 }}
               aria-label={bySlug(slug).client}
             >
               <Lift className={`w-full h-full rounded-[10px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
@@ -766,7 +831,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
               </Lift>
             </motion.button>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Vision + folder */}
@@ -940,7 +1005,7 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
             {/* B — AI */}
             <Reveal className={cardBase}>
               <div className="relative aspect-[16/9] bg-cobalt overflow-hidden">
-                <video src={vsrc('10-hepsiburada-3d-animasyon')} poster={poster('10-hepsiburada-3d-animasyon')} autoPlay muted loop playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
+                <AutoVideo src={vsrc('10-hepsiburada-3d-animasyon')} poster={poster('10-hepsiburada-3d-animasyon')} className="absolute inset-0 w-full h-full object-cover" />
               </div>
               <div className="p-4 md:p-5 bg-[#EFEFED]">
                 <p className="text-[14px] font-bold tracking-[-0.02em]">{s.b.title}</p>
@@ -1056,18 +1121,9 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
               className={`pointer-events-auto relative overflow-hidden bg-black ${CARD} ${current.vertical ? 'h-[min(76svh,760px)] aspect-[9/16]' : 'w-[min(92vw,1100px)] aspect-video'}`}
             >
               <img src={poster(current.slug)} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <motion.video
-                key={current.slug}
-                src={vsrc(current.slug)}
-                autoPlay
-                loop
-                playsInline
-                controls
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35, duration: 0.4 }}
-                className="absolute inset-0 w-full h-full object-contain bg-black"
-              />
+              <motion.div key={current.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="absolute inset-0">
+                <Player src={vsrc(current.slug)} poster={poster(current.slug)} unmuteLabel={t.work.unmute} className="absolute inset-0 w-full h-full object-contain bg-black" />
+              </motion.div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -1152,6 +1208,7 @@ function ExperienceSection({ t }: { t: Copy }) {
   const e = t.experience
   const rot = [-5, 0, 5]
   const [hover, setHover] = useState<number | null>(null)
+  const canHover = useCanHover()
   return (
     <section id="deneyim" className="py-16 md:py-24">
       <div className={`${wrap} grid md:grid-cols-[0.8fr_1.2fr] gap-12 items-center`}>
@@ -1168,7 +1225,7 @@ function ExperienceSection({ t }: { t: Copy }) {
                 key={c.label}
                 initial={{ opacity: 0, y: 50, rotate: 0 }}
                 whileInView={{ opacity: 1, y: hot ? -10 : 0, rotate: rot[i] }}
-                onHoverStart={() => setHover(i)}
+                onHoverStart={() => canHover && setHover(i)}
                 onHoverEnd={() => setHover(null)}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ ...SPRING, delay: i * 0.08 }}
@@ -1267,7 +1324,7 @@ function ClosingSection({ t }: { t: Copy }) {
     <section id="iletisim" className="py-10 md:py-16">
       <div className={`${wrap} grid md:grid-cols-2 gap-4 md:gap-5`}>
         <Reveal className="relative overflow-hidden rounded-[16px] md:rounded-[20px] bg-berry aspect-[4/4.4] md:aspect-[5/5.6]">
-          <video src={vsrc('15-mamush-ribeye')} poster={poster('15-mamush-ribeye')} autoPlay muted loop playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80" />
+          <AutoVideo src={vsrc('15-mamush-ribeye')} poster={poster('15-mamush-ribeye')} className="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-berry via-berry/50 to-berry/10" />
           <div className="absolute left-5 right-5 bottom-5 md:left-8 md:bottom-8 text-white">
             <span className="w-6 h-6 rounded-full border border-white/60 flex items-center justify-center mb-4"><Icon name="pen" size={12} /></span>
@@ -1382,10 +1439,10 @@ function VideoModal({ playing, t, onClose }: { playing: Playing; t: Copy; onClos
         </div>
         <div className={`overflow-hidden rounded-[16px] bg-black shadow-[0_40px_80px_-30px_rgba(0,0,0,0.5)] ${vertical ? 'aspect-[9/16]' : 'aspect-video'}`}>
           {playing.kind === 'file' ? (
-            <video src={vsrc(playing.work.slug)} poster={poster(playing.work.slug)} controls autoPlay playsInline className="w-full h-full object-contain" />
+            <Player src={vsrc(playing.work.slug)} poster={poster(playing.work.slug)} unmuteLabel={t.work.unmute} className="w-full h-full object-contain" />
           ) : (
             <iframe
-              src={`https://www.youtube.com/embed/${playing.item.youtubeId}?autoplay=1${playing.item.isShort ? `&loop=1&playlist=${playing.item.youtubeId}` : ''}`}
+              src={`https://www.youtube.com/embed/${playing.item.youtubeId}?autoplay=1&playsinline=1&rel=0${playing.item.isShort ? `&loop=1&playlist=${playing.item.youtubeId}` : ''}`}
               title={title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
