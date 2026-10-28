@@ -8,11 +8,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        night: '#0A0A0A',
-        coal: '#141414',
-        bone: '#EDEAE3',
-        ash: '#8A877F',
-        rec: '#FF3B30',
+        paper: '#F4F4F3',
+        ink: '#111111',
+        mute: '#A1A1A1',
+        body: '#5C5C5C',
+        line: '#E7E7E5',
+        maroon: '#8E2A20',
+        cobalt: '#2B3CF5',
+        jade: '#5DB592',
+        flame: '#F26A21',
+        violet: '#C24BF0',
+        lime: '#E6F46B',
+        berry: '#C8174F',
         navy: {
           950: '#030712',
           900: '#0a1628',
@@ -27,9 +34,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-serif)', 'Georgia', 'serif'],
-        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+        sans: ['var(--font-satoshi)', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
