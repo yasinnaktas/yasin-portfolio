@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-inter: 'Inter', sans-serif;
-  --paper: #F4F3EF;
-  --ink: #0B0B0C;
+  --night: #0A0A0A;
+  --bone: #EDEAE3;
 }
 
 * {
@@ -20,7 +19,7 @@ html {
 
 /* Fixed nav offset for anchor jumps */
 section[id] {
-  scroll-margin-top: 90px;
+  scroll-margin-top: 64px;
 }
 
 /* Respect reduced-motion preference */
@@ -39,38 +38,50 @@ section[id] {
 }
 
 body {
-  font-family: var(--font-inter), sans-serif;
-  background-color: var(--paper);
-  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  background-color: var(--night);
+  color: var(--bone);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-.font-display {
-  font-family: var(--font-display), var(--font-inter), sans-serif;
-  letter-spacing: -0.045em;
+/* Type system — display: serif, meta: mono caps */
+.display {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 0.88;
+}
+
+.meta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 ::selection {
-  background: #DCFF3F;
-  color: #0B0B0C;
+  background: var(--bone);
+  color: var(--night);
 }
 
-/* Chat-bubble tag tail */
-.bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 14px;
-  width: 9px;
-  height: 9px;
-  background: inherit;
-  transform: rotate(45deg);
-  border-radius: 2px;
+/* Film grain overlay */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: -50%;
+  z-index: 70;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
 }
-.bubble-right::after {
-  left: auto;
-  right: 14px;
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -82,14 +93,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--paper);
+  background: var(--night);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cfcdc6;
+  background: #2a2a2a;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a9a7a0;
+  background: #444;
 }

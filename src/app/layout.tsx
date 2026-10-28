@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter, Inter_Tight } from 'next/font/google'
+import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-inter' })
-const interTight = Inter_Tight({ subsets: ['latin', 'latin-ext'], variable: '--font-display' })
+// One type family across the site: Instrument Serif for display, Instrument Sans for text, JetBrains Mono for meta/timecode
+const sans = Instrument_Sans({ subsets: ['latin', 'latin-ext'], variable: '--font-sans' })
+const serif = Instrument_Serif({ subsets: ['latin', 'latin-ext'], weight: '400', style: ['normal', 'italic'], variable: '--font-serif' })
+const mono = JetBrains_Mono({ subsets: ['latin', 'latin-ext'], weight: ['400', '500'], variable: '--font-mono' })
 
 const description = 'Head of Creative · Creative Director — reklam filmi, yapay zeka destekli video ve kreatif liderlik. 1000+ marka, 10 kişilik ekip, başarılı exit ve App Store’da yayında iOS ürünleri.'
 
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#F4F3EF',
+  themeColor: '#0A0A0A',
 }
 
 export default function RootLayout({
@@ -35,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className={`${inter.variable} ${interTight.variable} font-sans`}>{children}</body>
+      <body className={`${sans.variable} ${serif.variable} ${mono.variable} font-sans`}>{children}</body>
     </html>
   )
 }
