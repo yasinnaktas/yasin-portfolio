@@ -1,27 +1,31 @@
 import type { Metadata } from 'next'
-import { Inter, Instrument_Serif } from 'next/font/google'
+import { Inter, Inter_Tight } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const instrument = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-instrument' })
+const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-inter' })
+const interTight = Inter_Tight({ subsets: ['latin', 'latin-ext'], variable: '--font-display' })
+
+const description = 'Head of Creative · Creative Director — reklam filmi, yapay zeka destekli video ve kreatif liderlik. 1000+ marka, 10 kişilik ekip, başarılı exit ve App Store’da yayında iOS ürünleri.'
 
 export const metadata: Metadata = {
-  title: 'Yasin Aktaş | Creative Director',
-  description: 'Kreatif liderlik, performance marketing ve yapay zeka — 1000+ marka, 10 kişilik ekip yönetimi, başarılı exit ve iOS ürünleri',
-  keywords: ['video prodüksiyon', 'creative producer', 'yapay zeka', 'iOS uygulama', 'reklam filmi', 'İstanbul'],
+  metadataBase: new URL('https://xn--yasinakta-82b.com'),
+  title: 'Yasin Aktaş | Head of Creative · Creative Director',
+  description,
+  keywords: ['creative director', 'head of creative', 'reklam filmi', 'yapay zeka video', 'video prodüksiyon', 'iOS uygulama', 'İstanbul'],
   openGraph: {
-    title: 'Yasin Aktaş | Creative Director',
-    description: 'Kreatif liderlik, performance marketing ve yapay zeka — 1000+ marka, 10 kişilik ekip yönetimi, başarılı exit ve iOS ürünleri',
+    title: 'Yasin Aktaş | Head of Creative · Creative Director',
+    description,
     locale: 'tr_TR',
     type: 'website',
   },
+  twitter: { card: 'summary_large_image' },
   robots: { index: true, follow: true },
 }
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#050508',
+  themeColor: '#F4F3EF',
 }
 
 export default function RootLayout({
@@ -31,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className={`${inter.variable} ${instrument.variable} font-sans`}>{children}</body>
+      <body className={`${inter.variable} ${interTight.variable} font-sans`}>{children}</body>
     </html>
   )
 }

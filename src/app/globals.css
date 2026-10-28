@@ -4,6 +4,8 @@
 
 :root {
   --font-inter: 'Inter', sans-serif;
+  --paper: #F4F3EF;
+  --ink: #0B0B0C;
 }
 
 * {
@@ -38,47 +40,41 @@ section[id] {
 
 body {
   font-family: var(--font-inter), sans-serif;
-  background-color: #050508;
-  color: white;
+  background-color: var(--paper);
+  color: var(--ink);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-.font-serif-accent {
-  font-family: var(--font-instrument), serif;
-  font-style: italic;
-  font-weight: 400;
+.font-display {
+  font-family: var(--font-display), var(--font-inter), sans-serif;
+  letter-spacing: -0.045em;
 }
 
-.text-outline {
-  -webkit-text-stroke: 1px rgba(255,255,255,0.35);
-  color: transparent;
+::selection {
+  background: #DCFF3F;
+  color: #0B0B0C;
 }
 
-/* Liquid Glass */
-.liquid-glass {
-  background: rgba(255, 255, 255, 0.01);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-.liquid-glass::before {
+/* Chat-bubble tag tail */
+.bubble::after {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
-    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
-    rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+  bottom: -4px;
+  left: 14px;
+  width: 9px;
+  height: 9px;
+  background: inherit;
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+.bubble-right::after {
+  left: auto;
+  right: 14px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 ::-webkit-scrollbar {
@@ -86,14 +82,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #050508;
+  background: var(--paper);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #cfcdc6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #a9a7a0;
 }
