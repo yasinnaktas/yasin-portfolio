@@ -126,7 +126,7 @@ const copy = {
     work: {
       kicker: ['Portföy', '2026'],
       title: [['Seçili işler,\n'], ['2026.', 'mute']] as Parts,
-      desc: 'Bir işin üzerine gelin, ortada oynasın. Tıklayınca tam ekran izleyin.',
+      desc: 'Bir işe tıklayın, ortada büyüsün ve oynasın. Kapatınca ızgaraya dönün.',
       like: 'İzle',
       cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', ai: 'AI Video', doc: 'Belgesel' } as Record<CategoryKey, string>,
     },
@@ -228,7 +228,7 @@ const copy = {
     work: {
       kicker: ['Portfolio', '2026'],
       title: [['Selected work,\n'], ['2026.', 'mute']] as Parts,
-      desc: 'Hover a piece and it plays in the middle. Click to watch full screen.',
+      desc: 'Click a piece and it grows into the centre and plays. Close it to return to the grid.',
       like: 'Watch',
       cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', ai: 'AI Video', doc: 'Documentary' } as Record<CategoryKey, string>,
     },
@@ -488,6 +488,8 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
   const step = md ? 84 : 40
   const mid = (heroFan.length - 1) / 2
   const tilt = [-7, 4, -3, 2, -4, 5, 8]
+  // Raise the hovered card instantly; animating zIndex makes it slide through its neighbours
+  const [hover, setHover] = useState<number | null>(null)
 
   return (
     <section className="relative pt-28 md:pt-36 pb-16 md:pb-24 overflow-hidden">
@@ -495,7 +497,7 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
       <div className={`${wrap} text-center`}>
         <Title as="h1" immediate parts={t.hero.title} className="text-[38px] sm:text-[52px] md:text-[64px]" />
 
-        <div className="relative h-[180px] sm:h-[220px] md:h-[280px] mt-6 md:mt-8" style={{ perspective: 1400 }}>
+        <div className="relative h-[180px] sm:h-[220px] md:h-[280px] mt-6 md:mt-8">
           {heroFan.map((slug, i) => {
             const o = i - mid
             return (
@@ -505,9 +507,10 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
                 initial={{ x: 0, y: 40, rotate: 0, opacity: 0, scale: 0.9 }}
                 animate={{ x: o * step, y: Math.abs(o) * 4, rotate: tilt[i], opacity: 1, scale: 1 }}
                 transition={{ ...SPRING, delay: 0.45 + Math.abs(o) * 0.08, opacity: { duration: 0.5, delay: 0.45 } }}
-                whileHover={{ zIndex: 40 }}
+                onHoverStart={() => setHover(i)}
+                onHoverEnd={() => setHover(null)}
                 className="absolute left-1/2 top-1/2 -ml-[44px] -mt-[55px] md:-ml-[72px] md:-mt-[88px] w-[88px] h-[110px] md:w-[144px] md:h-[176px] will-change-transform"
-                style={{ zIndex: 10 + i, rotateY: -12 }}
+                style={{ zIndex: hover === i ? 50 : 10 + i }}
                 aria-label={bySlug(slug).client}
               >
                 <Lift y={-16} scale={1.05} rotate={0} className={`w-full h-full rounded-[12px] md:rounded-[16px] overflow-hidden bg-white ${CARD}`}>
@@ -662,32 +665,41 @@ function RevealWord({ children, progress, range, className = '' }: { children: R
   return <motion.span style={{ opacity }} className={`inline-block mr-[0.24em] ${className}`}>{children}</motion.span>
 }
 
-function StackCard({ slug, i, progress }: { slug: string; i: number; progress: MotionValue<number> }) {
+// Fan card that opens out as the section scrolls in
+function SpreadCard({ slug, i, n, progress }: { slug: string; i: number; n: number; progress: MotionValue<number> }) {
+  const o = i - (n - 1) / 2
   const smooth = useSpring(progress, { stiffness: 60, damping: 20, mass: 0.8 })
-  const rotate = useTransform(smooth, [0, 0.6], [-24 + i * 5, -10 + i * 5])
-  const x = useTransform(smooth, [0, 0.6], [i * 3, i * 10])
-  const y = useTransform(smooth, [0, 0.6], [30, -i * 6])
+  const x = useTransform(smooth, [0, 1], [o * 10, o * 122])
+  const rotate = useTransform(smooth, [0, 1], [o * 2, o * 7])
+  const y = useTransform(smooth, [0, 1], [0, Math.abs(o) * 14])
   return (
-    <motion.div style={{ rotate, x, y, zIndex: i }} className={`absolute left-0 top-0 w-[84px] h-[104px] md:w-[110px] md:h-[136px] rounded-[12px] overflow-hidden bg-white will-change-transform ${CARD}`}>
-      <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+    <motion.div style={{ x, rotate, y, zIndex: 10 - Math.abs(Math.round(o)) }} className="absolute left-1/2 top-0 -ml-[72px] w-[144px] h-[180px] will-change-transform">
+      <div className={`w-full h-full rounded-[16px] overflow-hidden bg-white ${CARD}`}>
+        <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+      </div>
     </motion.div>
   )
 }
 
 function StatementSection({ t }: { t: Copy }) {
   const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.9', 'end 0.45'] })
+  const fanRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.8', 'end 0.45'] })
+  const { scrollYProgress: fanProgress } = useScroll({ target: fanRef, offset: ['start 0.95', 'start 0.4'] })
   const n = t.statement.length
-  const stack = ['04-kamuran-kreatif-kisa-film', '09-linde-29-ekim', '11-isijet-motion-graphic', '01-recrea-sosyal-medya', '08-zuber-3d-urun-filmi']
+  const stack = ['04-kamuran-kreatif-kisa-film', '09-linde-29-ekim', '11-isijet-motion-graphic', '08-zuber-3d-urun-filmi', '01-recrea-sosyal-medya']
 
   return (
     <section className="py-24 md:py-36 overflow-hidden">
-      <div ref={ref} className={`${wrap} relative text-center`}>
-        <div className="relative mx-auto w-[84px] md:w-[110px] h-[104px] md:h-[136px] -mb-6 md:-mb-10 z-10">
-          {stack.map((s, i) => <StackCard key={s} slug={s} i={i} progress={scrollYProgress} />)}
+      <div className={`${wrap} text-center`}>
+        {/* The fan owns its own band of space, so it never covers the sentence */}
+        <div ref={fanRef} className="relative h-[110px] sm:h-[160px] md:h-[210px] mb-10 md:mb-14">
+          <div className="absolute inset-x-0 top-0 h-[180px] origin-top scale-[0.56] sm:scale-[0.8] md:scale-100">
+            {stack.map((slug, i) => <SpreadCard key={slug} slug={slug} i={i} n={stack.length} progress={fanProgress} />)}
+          </div>
         </div>
-        <div className="relative max-w-[760px] mx-auto">
-          <p className="relative z-20 title text-[24px] sm:text-[30px] md:text-[38px] leading-[1.22] tracking-[-0.035em]">
+        <div ref={ref} className="max-w-[760px] mx-auto">
+          <p className="title text-[24px] sm:text-[30px] md:text-[38px] leading-[1.22] tracking-[-0.035em]">
             {t.statement.map((tok, k) => {
               const range: [number, number] = [k / n, Math.min(1, (k + 2) / n)]
               if (typeof tok === 'string') return <RevealWord key={k} progress={scrollYProgress} range={range}>{tok}</RevealWord>
@@ -957,48 +969,35 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
 }
 
 // ============================================
-// WORK — portrait grid with an expanded centre card
+// WORK — grid; a clicked card grows into the centre over a blurred page
 // ============================================
-function WorkSection({ t, onPlay, onArchive }: { t: Copy; onPlay: (w: Work) => void; onArchive: (a: ArchiveItem) => void }) {
-  const lg = useMedia('(min-width: 1024px)')
-  const [sel, setSel] = useState<Work>(bySlug('12-claudie-miami'))
+const LAYOUT = { type: 'spring', stiffness: 210, damping: 30, mass: 0.9 } as const
+
+function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) => void }) {
+  const [open, setOpen] = useState<string | null>(null)
   // 15 tiles: 13 works + two archive stills, so the 5×3 grid closes
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
   const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), fromArchive(archive[0]), fromArchive(archive[1])]
+  const order = grid.filter((c) => c.work).map((c) => c.key)
+  const current = open ? bySlug(open) : null
+  const step = (d: number) => open && setOpen(order[(order.indexOf(open) + d + order.length) % order.length])
 
-  const Featured = (
-    <div className="relative w-full h-full rounded-[18px] md:rounded-[22px] overflow-hidden bg-flame shadow-[0_40px_80px_-30px_rgba(0,0,0,0.55)]">
-      <AnimatePresence mode="popLayout">
-        <motion.video
-          key={sel.slug}
-          src={vsrc(sel.slug)}
-          poster={poster(sel.slug)}
-          autoPlay
-          muted
-          loop
-          playsInline
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      </AnimatePresence>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-      <button onClick={() => onPlay(sel)} className="absolute top-3 right-3 inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-white text-ink text-[10px] font-bold">
-        <Icon name="play" size={10} /> {t.work.like}
-      </button>
-      <button onClick={() => onPlay(sel)} className="absolute bottom-3 left-3 right-3 flex items-center gap-2.5 text-left">
-        <img src={poster(sel.slug)} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/40" />
-        <span>
-          <span className="block text-white text-[12px] font-bold leading-tight">{sel.client}{sel.place ? ` · ${sel.place}` : ''}</span>
-          <span className="block text-white/70 text-[10px]">{sel.title} — {t.work.cats[sel.category]}</span>
-        </span>
-      </button>
-    </div>
-  )
+  useEffect(() => {
+    if (!open) return
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(null)
+      if (e.key === 'ArrowRight') step(1)
+      if (e.key === 'ArrowLeft') step(-1)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
+  })
 
   return (
     <section id="isler" className="py-16 md:py-24">
@@ -1011,44 +1010,85 @@ function WorkSection({ t, onPlay, onArchive }: { t: Copy; onPlay: (w: Work) => v
           <Reveal delay={0.2}><p className="text-[12px] md:text-[13px] text-body max-w-[260px] leading-relaxed">{t.work.desc}</p></Reveal>
         </div>
 
-        {!lg && <div className="aspect-[4/5] max-w-[420px] mx-auto mb-5">{Featured}</div>}
-
-        <div className="relative">
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5 lg:px-[4%]">
-            {grid.map((c, i) => (
-              <motion.button
-                key={c.key}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ ...SPRING, delay: (i % 5) * 0.05 }}
-                whileHover={{ y: -6 }}
-                onMouseEnter={() => c.work && setSel(c.work)}
-                onClick={() => (c.item ? onArchive(c.item) : lg ? onPlay(c.work!) : setSel(c.work!))}
-                className={`group relative aspect-[4/5] rounded-[12px] md:rounded-[14px] overflow-hidden bg-[#e9e9e7] ${c.work && sel.slug === c.work.slug && !lg ? 'ring-2 ring-flame ring-offset-2 ring-offset-paper' : ''}`}
-                aria-label={c.label}
-              >
-                <img src={c.img} alt="" loading="lazy" onError={thumbFallback} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <span className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent text-white text-[10px] font-bold text-left opacity-0 group-hover:opacity-100 transition-opacity truncate">{c.label}</span>
-              </motion.button>
-            ))}
-          </div>
-          {lg && (
-            // Centering lives on the wrapper; the motion child owns its own transform
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[29%] aspect-[3/4.1] z-20">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.85 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={SPRING}
-                className="w-full h-full"
-              >
-                {Featured}
-              </motion.div>
-            </div>
-          )}
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5 lg:px-[4%]">
+          {grid.map((c, i) => (
+            <motion.button
+              key={c.key}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ ...SPRING, delay: (i % 5) * 0.05 }}
+              onClick={() => (c.item ? onArchive(c.item) : setOpen(c.key))}
+              className="group relative aspect-[4/5]"
+              aria-label={c.label}
+            >
+              {open === c.key ? (
+                <div className="absolute inset-0 rounded-[14px] bg-black/[0.04]" />
+              ) : (
+                <motion.div layoutId={`work-${c.key}`} transition={LAYOUT} style={{ borderRadius: 14 }} className="absolute inset-0 overflow-hidden bg-[#e9e9e7]">
+                  <img src={c.img} alt="" loading="lazy" onError={thumbFallback} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                  <span className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-black/60 to-transparent text-white text-[11px] font-bold text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">{c.label}</span>
+                </motion.div>
+              )}
+            </motion.button>
+          ))}
         </div>
       </div>
+
+      <AnimatePresence>
+        {current && (
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="fixed inset-0 z-[90] bg-paper/60 backdrop-blur-xl"
+            onClick={() => setOpen(null)}
+          />
+        )}
+        {current && (
+          <div key="stage" className="fixed inset-0 z-[95] flex flex-col items-center justify-center gap-4 p-4 pointer-events-none">
+            <motion.div
+              layoutId={`work-${current.slug}`}
+              transition={LAYOUT}
+              style={{ borderRadius: 20 }}
+              className={`pointer-events-auto relative overflow-hidden bg-black ${CARD} ${current.vertical ? 'h-[min(76svh,760px)] aspect-[9/16]' : 'w-[min(92vw,1100px)] aspect-video'}`}
+            >
+              <img src={poster(current.slug)} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <motion.video
+                key={current.slug}
+                src={vsrc(current.slug)}
+                autoPlay
+                loop
+                playsInline
+                controls
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.35, duration: 0.4 }}
+                className="absolute inset-0 w-full h-full object-contain bg-black"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ delay: 0.2, duration: 0.35 }}
+              className="pointer-events-auto flex items-center gap-3 max-w-[92vw]"
+            >
+              <RoundBtn icon="arrowL" label="Previous" onClick={() => step(-1)} />
+              <div className="text-center min-w-0 px-1">
+                <p className="text-[13px] md:text-[14px] font-bold tracking-[-0.02em] truncate">{current.client}{current.place ? ` · ${current.place}` : ''}</p>
+                <p className="text-[11px] text-body truncate">{current.title} — {t.work.cats[current.category]}</p>
+              </div>
+              <RoundBtn icon="arrowR" label="Next" onClick={() => step(1)} />
+              <button onClick={() => setOpen(null)} aria-label="Close" className="ml-2 w-9 h-9 rounded-full bg-ink text-white flex items-center justify-center">
+                <Icon name="plus" size={15} className="rotate-45" />
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
@@ -1111,6 +1151,7 @@ function ArchiveSection({ t, onPlay }: { t: Copy; onPlay: (a: ArchiveItem) => vo
 function ExperienceSection({ t }: { t: Copy }) {
   const e = t.experience
   const rot = [-5, 0, 5]
+  const [hover, setHover] = useState<number | null>(null)
   return (
     <section id="deneyim" className="py-16 md:py-24">
       <div className={`${wrap} grid md:grid-cols-[0.8fr_1.2fr] gap-12 items-center`}>
@@ -1127,10 +1168,12 @@ function ExperienceSection({ t }: { t: Copy }) {
                 key={c.label}
                 initial={{ opacity: 0, y: 50, rotate: 0 }}
                 whileInView={{ opacity: 1, y: hot ? -10 : 0, rotate: rot[i] }}
-                whileHover={{ zIndex: 20 }}
+                onHoverStart={() => setHover(i)}
+                onHoverEnd={() => setHover(null)}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ ...SPRING, delay: i * 0.08 }}
-                className={`relative w-[31%] max-w-[170px] -mx-[1.5%] will-change-transform ${hot ? 'z-10' : ''}`}
+                className="relative w-[31%] max-w-[170px] -mx-[1.5%] will-change-transform"
+                style={{ zIndex: hover === i ? 30 : hot ? 10 : 1 }}
               >
                 <Lift y={-14} scale={1.02} rotate={-rot[i]} className={`rounded-[14px] p-3 md:p-4 aspect-[0.86/1] flex flex-col ${CARD} ${hot ? 'bg-flame text-white' : 'bg-white text-ink'}`}>
                 <div className="flex items-start justify-between gap-1">
@@ -1377,7 +1420,7 @@ export default function HomePage() {
         <ProductsSection t={t} onPlay={play} />
         <CommunitySection t={t} />
         <StorySection t={t} onPlay={play} />
-        <WorkSection t={t} onPlay={play} onArchive={(item) => setPlaying({ kind: 'yt', item })} />
+        <WorkSection t={t} onArchive={(item) => setPlaying({ kind: 'yt', item })} />
         <ArchiveSection t={t} onPlay={(item) => setPlaying({ kind: 'yt', item })} />
         <ExperienceSection t={t} />
         <BandSection t={t} />
