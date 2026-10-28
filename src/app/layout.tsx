@@ -12,15 +12,15 @@ const satoshi = localFont({
   display: 'swap',
 })
 
-const description = 'Head of Creative · Creative Director — reklam filmi, 3D, drone ve yapay zeka destekli video. 1000+ marka, 50M+ izlenme, başarılı exit ve App Store’da yayında iOS ürünleri.'
+const description = 'Creative Director / Video Production — reklam filmi, 3D, drone ve yapay zeka destekli video. 1000+ marka, 50M+ izlenme, başarılı exit ve App Store’da yayında iOS ürünleri.'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://xn--yasinakta-82b.com'),
-  title: 'Yasin Aktaş | Head of Creative · Creative Director',
+  title: 'Yasin Aktaş | Creative Director / Video Production',
   description,
   keywords: ['creative director', 'head of creative', 'reklam filmi', 'yapay zeka video', 'video prodüksiyon', 'iOS uygulama', 'İstanbul'],
   openGraph: {
-    title: 'Yasin Aktaş | Head of Creative · Creative Director',
+    title: 'Yasin Aktaş | Creative Director / Video Production',
     description,
     locale: 'tr_TR',
     type: 'website',

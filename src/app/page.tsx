@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform, MotionValue } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, MotionValue } from 'framer-motion'
 
 // ============================================
 // TYPES
@@ -18,22 +18,22 @@ type Token = string | { img: string } | { hl: string }
 // PROJECT DATA
 // ============================================
 // Self-hosted work: /public/videos/<slug>.mp4 + <slug>.jpg poster
-type Work = { slug: string; client: string; handle: string; place?: string; title: string; category: CategoryKey; vertical: boolean }
+type Work = { slug: string; client: string; place?: string; title: string; category: CategoryKey; vertical: boolean }
 
 const works: Work[] = [
-  { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', handle: '@kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', category: 'brand', vertical: false },
-  { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', handle: '@hepsiburada', title: '3D Animasyon Reklam', category: 'threeD', vertical: false },
-  { slug: '14-statement-coffee', client: 'STATEMENT Coffee', handle: '@statement', title: 'Behind Every Plate', category: 'food', vertical: false },
-  { slug: '12-claudie-miami', client: 'CLAUDIE', handle: '@claudie', place: 'Miami', title: 'Weekday Lunch', category: 'food', vertical: true },
-  { slug: '15-mamush-ribeye', client: 'Mamush', handle: '@mamush', title: 'Prime Cut Ribeye', category: 'food', vertical: true },
-  { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', handle: '@mrhakans', place: 'Jeddah', title: 'Something Better', category: 'food', vertical: true },
-  { slug: '07-ibb-bulgur-palas-drone', client: 'İBB', handle: '@ibb', place: 'Bulgur Palas', title: 'Drone Tanıtım', category: 'drone', vertical: true },
-  { slug: '02-kamuran-kruvasan', client: 'Kamuran', handle: '@kamuran', title: 'Kruvasan', category: 'ad', vertical: true },
-  { slug: '08-zuber-3d-urun-filmi', client: 'Züber', handle: '@zuber', title: '3D Ürün Filmi', category: 'threeD', vertical: true },
-  { slug: '11-isijet-motion-graphic', client: 'Isıjet', handle: '@isijet', title: 'Kurutma Çözümleri', category: 'motion', vertical: true },
-  { slug: '01-recrea-sosyal-medya', client: 'Recrea', handle: '@recrea', title: 'İncirli & Cevizli Kurabiye', category: 'ad', vertical: true },
-  { slug: '09-linde-29-ekim', client: 'Linde', handle: '@linde', title: '29 Ekim Cumhuriyet Bayramı', category: 'social', vertical: true },
-  { slug: '04-kamuran-kreatif-kisa-film', client: 'Kamuran', handle: '@kamuran', title: 'Cadılar Bayramı', category: 'social', vertical: true },
+  { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', category: 'brand', vertical: false },
+  { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', title: '3D Animasyon Reklam', category: 'threeD', vertical: false },
+  { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', category: 'food', vertical: false },
+  { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', category: 'food', vertical: true },
+  { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', category: 'food', vertical: true },
+  { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', category: 'food', vertical: true },
+  { slug: '07-ibb-bulgur-palas-drone', client: 'İBB', place: 'Bulgur Palas', title: 'Drone Tanıtım', category: 'drone', vertical: true },
+  { slug: '02-kamuran-kruvasan', client: 'Kamuran', title: 'Kruvasan', category: 'ad', vertical: true },
+  { slug: '08-zuber-3d-urun-filmi', client: 'Züber', title: '3D Ürün Filmi', category: 'threeD', vertical: true },
+  { slug: '11-isijet-motion-graphic', client: 'Isıjet', title: 'Kurutma Çözümleri', category: 'motion', vertical: true },
+  { slug: '01-recrea-sosyal-medya', client: 'Recrea', title: 'İncirli & Cevizli Kurabiye', category: 'ad', vertical: true },
+  { slug: '09-linde-29-ekim', client: 'Linde', title: '29 Ekim Cumhuriyet Bayramı', category: 'social', vertical: true },
+  { slug: '04-kamuran-kreatif-kisa-film', client: 'Kamuran', title: 'Cadılar Bayramı', category: 'social', vertical: true },
 ]
 
 const bySlug = (s: string) => works.find(w => w.slug === s)!
@@ -63,8 +63,6 @@ type Playing = { kind: 'file'; work: Work } | { kind: 'yt'; item: ArchiveItem }
 const vsrc = (slug: string) => `/videos/${slug}.mp4`
 const poster = (slug: string) => `/videos/${slug}.jpg`
 
-const clients = ['Hepsiburada', 'İBB', 'Linde', 'CLAUDIE Miami', 'Mr.Hakans', 'Mamush', 'STATEMENT', 'Isıjet', 'Züber', 'Kamuran', 'Recrea', 'Turkuvaz Medya']
-
 // ============================================
 // I18N COPY
 // ============================================
@@ -72,15 +70,15 @@ const copy = {
   tr: {
     nav: { projects: 'İşler', about: 'Hakkımda', products: 'Ürünler', experience: 'Deneyim', contact: 'İletişim' },
     hero: {
-      title: [['Markalar için izlenen\nhikâyeler üretiyorum.']] as Parts,
-      sub: 'Head of Creative · Creative Director. Reklam filmi, 3D, drone ve yapay zekayla İstanbul’dan Miami ve Cidde’ye 1000+ markaya içerik ürettim.',
+      title: [['Video prodüksiyon\nve kreatif liderlik.']] as Parts,
+      sub: 'Creative Director / Video Production',
       cta1: 'İşleri izle',
       cta2: 'Showreel',
     },
     showcase: {
       kicker: 'Prodüksiyon',
-      title: [['Reklamdan 3D’ye,\n'], ['restorandan markaya,\n', 'maroon'], ['her kare tek elde.']] as Parts,
-      desc: 'Fikirden çekime, kurgudan yayına. Kamera, drone, 3D ve yapay zeka araçlarıyla platforma özel, izlenen içerikler.',
+      title: [['Kameradan kurguya,\n'], ['çekimden yayına,\n', 'maroon'], ['uçtan uca prodüksiyon.']] as Parts,
+      desc: 'Profesyonel kamera ekipmanları ve drone ile çekim yapıyor; Premiere Pro, After Effects ve yapay zeka destekli programlarla post-prodüksiyon süreçlerini uçtan uca yönetiyorum.',
       cta1: 'İşleri izle',
       cta2: 'Hakkımda',
     },
@@ -89,18 +87,14 @@ const copy = {
       title: [['Kameradan\n'], ['kreatif '], ['liderliğe.', 'mute']] as Parts,
       watch: 'İzle',
     },
-    trusted: {
-      title: [['Birlikte çalıştıklarım,'], [' en iyiler.', 'mute']] as Parts,
-      desc: 'Restoranlardan teknoloji markalarına, İstanbul’dan Miami ve Cidde’ye.',
-    },
     statement: [
-      'Sahada', 'çeken', 'bir', 'videographer’dan', { img: poster('07-ibb-bulgur-palas-drone') }, 'ekip', 'yöneten', 'bir', 'kreatif', 'direktöre;',
-      '1000+', 'markaya', { hl: 'izlenen' }, 'hikâyeler', 'anlattım', { img: poster('12-claudie-miami') }, 've', 'kendi', 'ajansımı', 'sattım.',
+      'Medya', 'kuruluşlarında', '4', 'yıl', 'Kreatif', 'Videographer', 'olarak', { img: poster('07-ibb-bulgur-palas-drone') }, 'marka', 'kampanyaları', 've', 'haber', 'içerikleri', 'ürettim.',
+      'Creative', 'Touch', 'Productions', 'ile', 'içerik', 'üreten', 'değil,', { hl: 'süreci' }, 'yöneten', { img: poster('12-claudie-miami') }, 'bir', 'konuma', 'geçtim.',
     ] as Token[],
-    stair: { title: 'Reklamdan restorana', meta: '13 film · 2026', desc: 'Her formatta, her platformda izlenen işler.' },
+    stair: { title: 'Seçili işler', meta: '13 film · 2026', desc: 'Reklam filmi, 3D animasyon, drone ve sosyal medya içerikleri.' },
     products: {
       title: [['Fikirden\n'], ['App Store’a.', 'mute']] as Parts,
-      desc: 'Prodüksiyon birikimimi ürün vizyonuyla birleştirip, yapay zeka destekli geliştirmeyle üç iOS uygulamasını uçtan uca yayına aldım.',
+      desc: 'Yapay zeka destekli geliştirme yaklaşımıyla üç iOS uygulamasını fikirden App Store’a taşıdım.',
       label: 'Uygulamalar',
       store: 'App Store',
       apps: [
@@ -116,23 +110,23 @@ const copy = {
       ],
     },
     community: {
-      title: [['Bu hikâyede\n'], ['1000+ marka var.']] as Parts,
-      desc: 'Turkuvaz Medya ve Creative Touch Productions dönemlerinde ürettiğim ve yönettiğim işler.',
+      title: [['1000+ marka,\n'], ['10 kişilik ekip.', 'mute']] as Parts,
+      desc: 'Creative Touch Productions’ta 10 kişilik bir ekibi yöneterek binden fazla markaya reklam filmi, yapay zeka destekli video ve dijital danışmanlık hizmeti sundum.',
       stats: [ ['50M+', 'izlenme'], ['500+', 'video'], ['10', 'kişilik ekip'], ['15M₺', 'bütçe'], ['+%35', 'etkileşim'] ],
     },
     story: {
-      kicker: ['Hikâyem', 'Nasıl çalışırım'],
-      title: [['Her kare\n'], ['bir hikâye anlatır.']] as Parts,
-      desc: 'Medya kuruluşlarında 4 yıl Kreatif Videographer olarak çalıştım, sonra kendi ajansımı kurup sattım. Sahadaki üretim gücünü, ekip ve bütçe yöneten bir bakışla birleştiriyorum.',
-      a: { chip: 'Showreel izle', title: 'Çek, kurgula, yayınla.', desc: 'Profesyonel kamera ve drone ile 500+ video; Premiere Pro ve After Effects ile kurgu ve VFX.', cta: 'Nasıl?' },
-      b: { title: 'Yapay zekayla ölçek.', desc: 'AI destekli reklam filmi, 3D ve animasyon; şirketlerin yapay zeka dönüşümünde yönetici vizyonu.', cta: 'Ürünler' },
-      c: { title: 'Kreatif liderlik.', desc: '10 kişilik cross-functional ekip ve 15M₺+ medya bütçesi; neyi test edip neyi ölçekleyeceğine veriyle karar.', cta: 'Deneyim' },
-      d: { kicker: 'Creative Touch Productions', title: 'Başarılı exit', meta: 'Ocak 2026 · Hamburg', desc: 'Sıfırdan kurduğum ajans, Hamburg merkezli bir teknoloji şirketi tarafından satın alındı.' },
+      kicker: ['Hakkımda', 'Yetkinlikler'],
+      title: [['Üretimden\n'], ['yönetime.']] as Parts,
+      desc: 'İzleyici davranışı, içerik stratejisi ve YouTube, Instagram gibi platformların algoritmaları konusunda güçlü bilgi birikimine sahibim. Sahadaki teknik üretim gücümü, ajans yönetiminden gelen liderlik ve stratejik bakış açısıyla birleştiriyorum.',
+      a: { chip: 'Showreel izle', title: 'Çekim ve post-prodüksiyon', desc: 'Profesyonel kamera ve drone ile çekim; Premiere Pro, After Effects ve yapay zeka destekli programlarla kurgu.', cta: 'Showreel' },
+      b: { title: 'Yapay zeka destekli üretim', desc: 'Yapay zeka destekli reklam filmleri ve animasyonlar; App Store’da yayınlanan iOS uygulamaları.', cta: 'Ürünler' },
+      c: { title: 'Ekip ve proje yönetimi', desc: '10 kişilik ekip yönetimi, kriz anlarında çözüm üretme ve farklı müşteri dinamiklerine hızla adapte olma.', cta: 'Deneyim' },
+      d: { kicker: 'Creative Touch Productions', title: 'Ajans satışı', meta: 'Ocak 2026 · Hamburg', desc: 'Ajans, Ocak 2026’da Hamburg merkezli bir teknoloji şirketi tarafından satın alındı.' },
     },
     work: {
       kicker: ['Portföy', '2026'],
-      title: [['Seçili işler,\n'], ['sesli izle.', 'mute']] as Parts,
-      desc: 'Bir işin üzerine gel, ortada oynasın. Tıkla, tam ekran izle.',
+      title: [['Seçili işler,\n'], ['2026.', 'mute']] as Parts,
+      desc: 'Bir işin üzerine gelin, ortada oynasın. Tıklayınca tam ekran izleyin.',
       like: 'İzle',
       cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', ai: 'AI Video', doc: 'Belgesel' } as Record<CategoryKey, string>,
     },
@@ -144,7 +138,7 @@ const copy = {
     },
     experience: {
       title: 'Deneyim',
-      desc: 'Sahadan ajans yönetimine: 4 kurum, 5 yıl. Turkuvaz Medya’da 4 yıl, ardından kendi ajansım ve exit.',
+      desc: 'Yaklaşık 5 yıldır video prodüksiyon ve medya sektöründe aktif olarak çalışıyorum.',
       cards: [
         { label: 'Turkuvaz Medya', big: '4 yıl', small: 'Kreatif Videographer' },
         { label: 'Creative Touch', big: 'Kurucu', small: 'Creative Director', badge: 'Exit' },
@@ -165,12 +159,12 @@ const copy = {
     },
     band: { words: ['Reklam Filmi', '3D Animasyon', 'Drone', 'AI Video', 'Restoran Filmleri', 'Motion Graphic'], caption: ['2026', 'portfolyo'] },
     closing: {
-      a: { title: [['Birlikte\n'], ['çalışalım.']] as Parts, desc: 'Kreatif liderlik pozisyonları, danışmanlık ve iş birlikleri için.', cta: 'Email gönder' },
-      b: { title: [['Kariyerim\n'], ['LinkedIn’de.']] as Parts, desc: 'Deneyim, referanslar ve güncel işler için profilime göz at.', cta: 'LinkedIn' },
+      a: { title: [['Birlikte\n'], ['çalışalım.']] as Parts, desc: 'Kurumsal bir yapıda yönetici pozisyonunda değer üretmeyi hedefliyorum.', cta: 'Email gönder' },
+      b: { title: [['Kariyerim\n'], ['LinkedIn’de.']] as Parts, desc: 'Deneyimlerim ve güncel işlerim LinkedIn profilimde.', cta: 'LinkedIn' },
     },
     footer: {
       title: 'Yasin Aktaş.',
-      desc: 'Head of Creative · Creative Director. Reklam filmi, 3D, drone ve yapay zekayla izlenen hikâyeler.',
+      desc: 'Creative Director / Video Production. İstanbul, Türkiye.',
       cols: [ ['Sayfalar', 'İşler', 'Hakkımda', 'Ürünler', 'Deneyim'], ['İletişim', 'Email', 'Telefon', 'İstanbul, TR'], ['Ürünler', 'Speego', 'Sanal Drone', 'Someday'] ],
       rights: '© 2026 · Tüm hakları saklıdır',
     },
@@ -178,15 +172,15 @@ const copy = {
   en: {
     nav: { projects: 'Work', about: 'About', products: 'Products', experience: 'Experience', contact: 'Contact' },
     hero: {
-      title: [['I make stories people\nactually watch.']] as Parts,
-      sub: 'Head of Creative · Creative Director. With ad films, 3D, drone and AI, I’ve made content for 1000+ brands, from Istanbul to Miami and Jeddah.',
+      title: [['Video production and\ncreative leadership.']] as Parts,
+      sub: 'Creative Director / Video Production',
       cta1: 'Watch the work',
       cta2: 'Showreel',
     },
     showcase: {
       kicker: 'Production',
-      title: [['From ads to 3D,\n'], ['restaurants to brands,\n', 'maroon'], ['every frame in one hand.']] as Parts,
-      desc: 'From idea to shoot, edit to release. Platform-native content made with camera, drone, 3D and AI tools.',
+      title: [['From camera to edit,\n'], ['shoot to release,\n', 'maroon'], ['end-to-end production.']] as Parts,
+      desc: 'I shoot with professional camera gear and drones, and run post-production end to end in Premiere Pro, After Effects and AI-assisted tools.',
       cta1: 'Watch the work',
       cta2: 'About me',
     },
@@ -195,18 +189,14 @@ const copy = {
       title: [['From the camera\n'], ['to creative '], ['leadership.', 'mute']] as Parts,
       watch: 'Watch',
     },
-    trusted: {
-      title: [['Who I’ve worked with,'], [' the best.', 'mute']] as Parts,
-      desc: 'From restaurants to tech brands, from Istanbul to Miami and Jeddah.',
-    },
     statement: [
-      'From', 'a', 'videographer', 'shooting', 'in', 'the', 'field', { img: poster('07-ibb-bulgur-palas-drone') }, 'to', 'a', 'creative', 'director', 'leading', 'a', 'team;',
-      'I', 'told', { hl: 'watched' }, 'stories', 'for', '1000+', 'brands', { img: poster('12-claudie-miami') }, 'and', 'sold', 'my', 'own', 'agency.',
+      'I', 'spent', '4', 'years', 'as', 'a', 'Creative', 'Videographer', { img: poster('07-ibb-bulgur-palas-drone') }, 'producing', 'brand', 'campaigns', 'and', 'news', 'content.',
+      'With', 'Creative', 'Touch', 'Productions', 'I', 'moved', 'from', 'making', 'content', 'to', { hl: 'running' }, 'the', 'process.', { img: poster('12-claudie-miami') },
     ] as Token[],
-    stair: { title: 'From ads to restaurants', meta: '13 films · 2026', desc: 'Work that gets watched, in every format and platform.' },
+    stair: { title: 'Selected work', meta: '13 films · 2026', desc: 'Ad films, 3D animation, drone and social media content.' },
     products: {
       title: [['From idea\n'], ['to the App Store.', 'mute']] as Parts,
-      desc: 'Combining production experience with product vision, I shipped three iOS apps end to end with AI-assisted development.',
+      desc: 'With an AI-assisted development approach, I took three iOS apps from idea to the App Store.',
       label: 'Apps',
       store: 'App Store',
       apps: [
@@ -222,22 +212,22 @@ const copy = {
       ],
     },
     community: {
-      title: [['There are 1000+\n'], ['brands in this story.']] as Parts,
-      desc: 'Work I produced and directed at Turkuvaz Media and Creative Touch Productions.',
+      title: [['1000+ brands,\n'], ['a team of 10.', 'mute']] as Parts,
+      desc: 'At Creative Touch Productions I led a 10-person team delivering ad films, AI-assisted video and digital consultancy to over a thousand brands.',
       stats: [ ['50M+', 'views'], ['500+', 'videos'], ['10', 'person team'], ['15M₺', 'budget'], ['+35%', 'engagement'] ],
     },
     story: {
-      kicker: ['My story', 'How I work'],
-      title: [['Every frame\n'], ['tells a story.']] as Parts,
-      desc: 'I spent 4 years as a Creative Videographer at media organisations, then founded and sold my own agency. I pair hands-on production with the view of someone who runs teams and budgets.',
-      a: { chip: 'Watch showreel', title: 'Shoot, edit, release.', desc: '500+ videos with professional camera and drone; editing and VFX in Premiere Pro and After Effects.', cta: 'How?' },
-      b: { title: 'Scale with AI.', desc: 'AI-assisted ad films, 3D and animation; an executive lens on companies’ AI transformation.', cta: 'Products' },
-      c: { title: 'Creative leadership.', desc: 'A 10-person cross-functional team and a 15M₺+ media budget; data-led calls on what to test and scale.', cta: 'Experience' },
-      d: { kicker: 'Creative Touch Productions', title: 'Successful exit', meta: 'January 2026 · Hamburg', desc: 'The agency I built from zero was acquired by a Hamburg-based technology company.' },
+      kicker: ['About', 'Skills'],
+      title: [['From production\n'], ['to leadership.']] as Parts,
+      desc: 'I have strong knowledge of audience behaviour, content strategy and the algorithms of platforms like YouTube and Instagram. I combine hands-on production with the leadership and strategic view that came from running an agency.',
+      a: { chip: 'Watch showreel', title: 'Shooting and post-production', desc: 'Shooting with professional camera and drone; editing in Premiere Pro, After Effects and AI-assisted tools.', cta: 'Showreel' },
+      b: { title: 'AI-assisted production', desc: 'AI-assisted ad films and animation; iOS apps published on the App Store.', cta: 'Products' },
+      c: { title: 'Team and project management', desc: 'Leading a 10-person team, solving problems under pressure and adapting quickly to different client dynamics.', cta: 'Experience' },
+      d: { kicker: 'Creative Touch Productions', title: 'Agency acquired', meta: 'January 2026 · Hamburg', desc: 'The agency was acquired by a Hamburg-based technology company in January 2026.' },
     },
     work: {
       kicker: ['Portfolio', '2026'],
-      title: [['Selected work,\n'], ['sound on.', 'mute']] as Parts,
+      title: [['Selected work,\n'], ['2026.', 'mute']] as Parts,
       desc: 'Hover a piece and it plays in the middle. Click to watch full screen.',
       like: 'Watch',
       cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', ai: 'AI Video', doc: 'Documentary' } as Record<CategoryKey, string>,
@@ -250,7 +240,7 @@ const copy = {
     },
     experience: {
       title: 'Experience',
-      desc: 'From the field to running an agency: 4 organisations, 5 years. 4 years at Turkuvaz Media, then my own agency and an exit.',
+      desc: 'About 5 years working actively in video production and media.',
       cards: [
         { label: 'Turkuvaz Media', big: '4 yrs', small: 'Creative Videographer' },
         { label: 'Creative Touch', big: 'Founder', small: 'Creative Director', badge: 'Exit' },
@@ -271,12 +261,12 @@ const copy = {
     },
     band: { words: ['Ad Films', '3D Animation', 'Drone', 'AI Video', 'Restaurant Films', 'Motion Graphics'], caption: ['2026', 'portfolio'] },
     closing: {
-      a: { title: [['Let’s work\n'], ['together.']] as Parts, desc: 'For creative leadership roles, consultancy and collaborations.', cta: 'Send email' },
-      b: { title: [['My career\n'], ['on LinkedIn.']] as Parts, desc: 'Experience, references and recent work on my profile.', cta: 'LinkedIn' },
+      a: { title: [['Let’s work\n'], ['together.']] as Parts, desc: 'I’m looking to create value in a leadership role within a corporate structure.', cta: 'Send email' },
+      b: { title: [['My career\n'], ['on LinkedIn.']] as Parts, desc: 'My experience and recent work are on my LinkedIn profile.', cta: 'LinkedIn' },
     },
     footer: {
       title: 'Yasin Aktaş.',
-      desc: 'Head of Creative · Creative Director. Stories people watch, with ad films, 3D, drone and AI.',
+      desc: 'Creative Director / Video Production. Istanbul, Türkiye.',
       cols: [ ['Pages', 'Work', 'About', 'Products', 'Experience'], ['Contact', 'Email', 'Phone', 'Istanbul, TR'], ['Products', 'Speego', 'Sanal Drone', 'Someday'] ],
       rights: '© 2026 · All rights reserved',
     },
@@ -285,7 +275,11 @@ const copy = {
 
 type Copy = typeof copy.tr
 
-const EASE = [0.22, 1, 0.36, 1] as const
+const EASE = [0.16, 1, 0.3, 1] as const
+// Entrances settle on a soft spring; hovers use a tighter one so they track the cursor
+const SPRING = { type: 'spring', stiffness: 70, damping: 18, mass: 1 } as const
+const HOVER = { type: 'spring', stiffness: 320, damping: 28 } as const
+const CARD = 'ring-1 ring-black/[0.04] shadow-[0_1px_2px_rgba(0,0,0,0.04),0_24px_44px_-26px_rgba(0,0,0,0.38)]'
 const wrap = 'max-w-[1120px] mx-auto px-5 md:px-8'
 const btnDark = 'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-ink text-white text-[12px] font-medium hover:bg-black/75 transition-colors'
 const btnGhost = 'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full text-[12px] font-medium text-ink hover:bg-black/[0.05] transition-colors'
@@ -350,7 +344,7 @@ function Reveal({ children, delay = 0, className = '', y = 24 }: { children: Rea
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.8, delay, ease: EASE }}
+      transition={{ duration: 1, delay, ease: EASE }}
       className={className}
     >
       {children}
@@ -358,38 +352,18 @@ function Reveal({ children, delay = 0, className = '', y = 24 }: { children: Rea
   )
 }
 
-const BUBBLE: Record<string, string> = {
-  cobalt: 'bg-cobalt text-white',
-  jade: 'bg-jade text-white',
-  ink: 'bg-ink text-white',
-  maroon: 'bg-maroon text-white',
-  flame: 'bg-flame text-white',
-}
-
-// Floating chat-bubble handle (@client)
-function Bubble({ children, tone = 'cobalt', className = '', delay = 0 }: { children: React.ReactNode; tone?: string; className?: string; delay?: number }) {
+// Hover lift lives on its own layer so it never inherits an entrance delay
+function Lift({ children, className = '', y = -10, scale = 1.03, rotate }: { children: React.ReactNode; className?: string; y?: number; scale?: number; rotate?: number }) {
   return (
-    <motion.span
-      initial={{ opacity: 0, scale: 0.6, y: 8 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ type: 'spring', stiffness: 320, damping: 18, delay }}
-      className={`absolute z-30 pointer-events-none ${className}`}
-    >
-      <motion.span
-        animate={{ y: [0, -4, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay }}
-        className={`bubble relative inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-medium whitespace-nowrap shadow-[0_8px_18px_-8px_rgba(0,0,0,0.45)] ${BUBBLE[tone]}`}
-      >
-        {children}
-      </motion.span>
-    </motion.span>
+    <motion.div whileHover={{ y, scale, ...(rotate !== undefined ? { rotate } : {}) }} transition={HOVER} className={`will-change-transform ${className}`}>
+      {children}
+    </motion.div>
   )
 }
 
 function Tile({ src, className = '', alt = '' }: { src: string; className?: string; alt?: string }) {
   return (
-    <div className={`overflow-hidden bg-[#e9e9e7] shadow-[0_18px_40px_-22px_rgba(0,0,0,0.45)] ${className}`}>
+    <div className={`overflow-hidden bg-[#e9e9e7] ${CARD} ${className}`}>
       <img src={src} alt={alt} onError={thumbFallback} loading="lazy" className="w-full h-full object-cover" />
     </div>
   )
@@ -444,14 +418,6 @@ function RoundBtn({ icon, onClick, light = false, label }: { icon: string; onCli
   )
 }
 
-function Logo() {
-  return (
-    <span className="w-5 h-5 rounded-md bg-ink text-lime flex items-center justify-center">
-      <Icon name="spark" size={12} />
-    </span>
-  )
-}
-
 // ============================================
 // NAVIGATION
 // ============================================
@@ -477,8 +443,8 @@ function Navigation({ t, lang, setLang }: { t: Copy; lang: Lang; setLang: (l: La
     <>
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${scrolled ? 'bg-paper/80 backdrop-blur-xl border-b border-line' : 'border-b border-transparent'}`}>
         <div className={`${wrap} h-14 flex items-center justify-between`}>
-          <a href="#" className="flex items-center gap-2 text-[13px] font-bold tracking-[-0.02em]"><Logo /> Yasin Aktaş</a>
-          <div className="hidden md:flex items-center gap-7 text-[12px] font-medium text-body">
+          <a href="#" className="text-[17px] md:text-[18px] font-bold tracking-[-0.035em] leading-none">Yasin Aktaş</a>
+          <div className="hidden md:flex items-center gap-8 text-[13px] font-medium text-body">
             {links.map((l, i) => (
               <a key={l.href} href={l.href} className="flex items-center gap-1.5 hover:text-ink transition-colors">
                 {i === 0 && <span className="w-1.5 h-1.5 rounded-full bg-ink" />}{l.label}
@@ -530,30 +496,32 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
         <Title as="h1" immediate parts={t.hero.title} className="text-[38px] sm:text-[52px] md:text-[64px]" />
 
         <div className="relative h-[180px] sm:h-[220px] md:h-[280px] mt-6 md:mt-8" style={{ perspective: 1400 }}>
-          <Bubble tone="cobalt" className="left-[14%] md:left-[22%] top-0" delay={1.2}>@reklamfilmi</Bubble>
-          <Bubble tone="jade" className="right-[12%] md:right-[22%] top-3" delay={1.4}>@aivideo</Bubble>
           {heroFan.map((slug, i) => {
             const o = i - mid
             return (
               <motion.button
                 key={slug}
                 onClick={() => onPlay(bySlug(slug))}
-                initial={{ x: 60, y: 120, rotate: 18, opacity: 0, scale: 0.8 }}
+                initial={{ x: 0, y: 40, rotate: 0, opacity: 0, scale: 0.9 }}
                 animate={{ x: o * step, y: Math.abs(o) * 4, rotate: tilt[i], opacity: 1, scale: 1 }}
-                transition={{ duration: 1.1, delay: 0.5 + i * 0.07, ease: EASE }}
-                whileHover={{ y: -18, scale: 1.06, rotate: 0, zIndex: 40, transition: { duration: 0.3 } }}
-                className="absolute left-1/2 top-1/2 -ml-[44px] -mt-[55px] md:-ml-[72px] md:-mt-[88px] w-[88px] h-[110px] md:w-[144px] md:h-[176px] rounded-[12px] md:rounded-[16px] overflow-hidden bg-white shadow-[0_24px_40px_-20px_rgba(0,0,0,0.5)]"
+                transition={{ ...SPRING, delay: 0.45 + Math.abs(o) * 0.08, opacity: { duration: 0.5, delay: 0.45 } }}
+                whileHover={{ zIndex: 40 }}
+                className="absolute left-1/2 top-1/2 -ml-[44px] -mt-[55px] md:-ml-[72px] md:-mt-[88px] w-[88px] h-[110px] md:w-[144px] md:h-[176px] will-change-transform"
                 style={{ zIndex: 10 + i, rotateY: -12 }}
                 aria-label={bySlug(slug).client}
               >
-                <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+                <Lift y={-16} scale={1.05} rotate={0} className={`w-full h-full rounded-[12px] md:rounded-[16px] overflow-hidden bg-white ${CARD}`}>
+                  <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+                </Lift>
               </motion.button>
             )
           })}
         </div>
 
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 0.8 }} className="text-[12px] md:text-[13px] text-body max-w-[420px] mx-auto leading-relaxed mt-4">
-          {t.hero.sub}
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 0.9, ease: EASE }} className="mt-5 text-[15px] md:text-[17px] font-medium tracking-[-0.025em] text-ink/85">
+          {t.hero.sub.split(' / ').map((part, i) => (
+            <span key={part}>{i > 0 && <span className="text-mute mx-2">/</span>}{part}</span>
+          ))}
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.8 }} className="flex items-center justify-center gap-2 mt-6">
           <a href="#isler" className={btnDark}>{t.hero.cta1}</a>
@@ -592,30 +560,29 @@ function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
 
         <div className="relative">
           <div className="relative aspect-[1.55/1]">
-            <Bubble tone="maroon" className="left-[8%] -top-1" delay={0.3}>{bySlug(cards[0]).handle}</Bubble>
-            <Bubble tone="ink" className="left-[60%] top-[22%]" delay={0.5}>{bySlug(cards[2]).handle}</Bubble>
             <AnimatePresence mode="popLayout">
               {cards.map((slug, i) => (
                 <motion.button
                   key={`${set}-${slug}`}
                   onClick={() => onPlay(bySlug(slug))}
-                  initial={{ opacity: 0, x: -80, y: -30, rotate: -6 }}
-                  whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
-                  exit={{ opacity: 0, x: 60 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.9, delay: i * 0.08, ease: EASE }}
-                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                  className="absolute w-[34%] aspect-[4/3.4] rounded-[12px] md:rounded-[14px] overflow-hidden bg-white shadow-[0_24px_40px_-22px_rgba(0,0,0,0.55)]"
+                  initial={{ opacity: 0, x: `${-56 * i}%`, y: `${-30 * i}%`, rotate: -4 }}
+                  whileInView={{ opacity: 1, x: '0%', y: '0%', rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.25 } }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ ...SPRING, delay: i * 0.07 }}
+                  className="absolute w-[34%] aspect-[4/3.4] will-change-transform"
                   style={{ left: pos[i].l, top: pos[i].t, zIndex: i + 1 }}
                   aria-label={bySlug(slug).client}
                 >
-                  <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+                  <Lift className={`w-full h-full rounded-[12px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
+                    <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+                  </Lift>
                 </motion.button>
               ))}
             </AnimatePresence>
           </div>
           <div className="absolute right-0 top-[8%] flex flex-col gap-1.5">
-            <RoundBtn icon="arrowU" label="Previous" onClick={() => setSet((set + 1) % cascadeSets.length)} />
+            <RoundBtn icon="arrowU" label="Previous" onClick={() => setSet((set - 1 + cascadeSets.length) % cascadeSets.length)} />
             <RoundBtn icon="arrowD" label="Next" onClick={() => setSet((set + 1) % cascadeSets.length)} />
           </div>
         </div>
@@ -640,7 +607,6 @@ function ReelSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
             <Kicker parts={t.reel.kicker} accent="text-mute" className="mb-2" />
             <Title parts={t.reel.title} className="text-[32px] md:text-[44px]" />
           </div>
-          <Bubble tone="ink" className="right-[4%] top-[30%]" delay={0.4}>@yasinakkts</Bubble>
         </div>
 
         <Reveal y={40}>
@@ -689,36 +655,6 @@ function ReelSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
 }
 
 // ============================================
-// TRUSTED BY
-// ============================================
-function TrustedSection({ t }: { t: Copy }) {
-  const doubled = [...clients, ...clients]
-  const glyphs = ['spark', 'globe', 'cube', 'bolt', 'heart', 'layers']
-  return (
-    <section className="py-16 md:py-24">
-      <div className={wrap}>
-        <div className="flex items-end justify-between gap-6 mb-8">
-          <div>
-            <Title parts={t.trusted.title} className="text-[22px] md:text-[28px]" />
-            <Reveal delay={0.2}><p className="text-[11px] md:text-[12px] text-body mt-1.5">{t.trusted.desc}</p></Reveal>
-          </div>
-          <div className="hidden sm:flex gap-1.5"><RoundBtn icon="arrowL" label="Previous" /><RoundBtn icon="arrowR" label="Next" /></div>
-        </div>
-        <div className="overflow-hidden fade-x">
-          <motion.div animate={{ x: ['0%', '-50%'] }} transition={{ duration: 40, repeat: Infinity, ease: 'linear' }} className="flex w-max">
-            {doubled.map((c, i) => (
-              <span key={i} className="flex items-center gap-2 pr-12 md:pr-16 text-[15px] md:text-[17px] font-bold tracking-[-0.03em] text-ink/30 whitespace-nowrap">
-                <Icon name={glyphs[i % glyphs.length]} size={16} /> {c}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ============================================
 // STATEMENT — scroll-revealed sentence with a card stack
 // ============================================
 function RevealWord({ children, progress, range, className = '' }: { children: React.ReactNode; progress: MotionValue<number>; range: [number, number]; className?: string }) {
@@ -727,11 +663,12 @@ function RevealWord({ children, progress, range, className = '' }: { children: R
 }
 
 function StackCard({ slug, i, progress }: { slug: string; i: number; progress: MotionValue<number> }) {
-  const rotate = useTransform(progress, [0, 0.6], [-30 + i * 6, -10 + i * 5])
-  const x = useTransform(progress, [0, 0.6], [i * 4, i * 10])
-  const y = useTransform(progress, [0, 0.6], [40, -i * 6])
+  const smooth = useSpring(progress, { stiffness: 60, damping: 20, mass: 0.8 })
+  const rotate = useTransform(smooth, [0, 0.6], [-24 + i * 5, -10 + i * 5])
+  const x = useTransform(smooth, [0, 0.6], [i * 3, i * 10])
+  const y = useTransform(smooth, [0, 0.6], [30, -i * 6])
   return (
-    <motion.div style={{ rotate, x, y, zIndex: i }} className="absolute left-0 top-0 w-[84px] h-[104px] md:w-[110px] md:h-[136px] rounded-[12px] overflow-hidden bg-white shadow-[0_20px_40px_-20px_rgba(0,0,0,0.5)]">
+    <motion.div style={{ rotate, x, y, zIndex: i }} className={`absolute left-0 top-0 w-[84px] h-[104px] md:w-[110px] md:h-[136px] rounded-[12px] overflow-hidden bg-white will-change-transform ${CARD}`}>
       <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
     </motion.div>
   )
@@ -750,8 +687,6 @@ function StatementSection({ t }: { t: Copy }) {
           {stack.map((s, i) => <StackCard key={s} slug={s} i={i} progress={scrollYProgress} />)}
         </div>
         <div className="relative max-w-[760px] mx-auto">
-          <Bubble tone="ink" className="left-[6%] -top-8" delay={0.2}>@creativetouch</Bubble>
-          <Bubble tone="cobalt" className="right-[4%] -top-6" delay={0.4}>@hamburg</Bubble>
           <p className="relative z-20 title text-[24px] sm:text-[30px] md:text-[38px] leading-[1.22] tracking-[-0.035em]">
             {t.statement.map((tok, k) => {
               const range: [number, number] = [k / n, Math.min(1, (k + 2) / n)]
@@ -794,7 +729,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
       {/* Staircase of work */}
       <div className={`${wrap} relative mb-20 md:mb-28`}>
         <div className="relative aspect-[2.2/1] md:aspect-[2.6/1]">
-          <Reveal className="absolute left-0 top-[2%] z-20 w-[150px] md:w-[190px] rounded-[14px] bg-white p-3.5 md:p-4 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.4)]">
+          <Reveal className={`absolute left-0 top-[2%] z-20 w-[150px] md:w-[190px] rounded-[14px] bg-white p-3.5 md:p-4 ${CARD}`}>
             <div className="flex items-start justify-between mb-6">
               <p className="text-[12px] md:text-[13px] font-bold leading-tight tracking-[-0.02em]">{t.stair.title}</p>
               <span className="w-5 h-5 rounded-full bg-ink text-white flex items-center justify-center shrink-0"><Icon name="play" size={11} /></span>
@@ -802,21 +737,21 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
             <p className="text-[9px] text-mute mb-1">— {t.stair.meta}</p>
             <p className="text-[10px] md:text-[11px] text-body leading-snug">{t.stair.desc}</p>
           </Reveal>
-          <Bubble tone="flame" className="left-[56%] top-[14%]" delay={0.5}>{bySlug(stairSlugs[2]).handle}</Bubble>
           {stairSlugs.map((slug, i) => (
             <motion.button
               key={slug}
               onClick={() => onPlay(bySlug(slug))}
-              initial={{ opacity: 0, y: -60, x: -40 }}
-              whileInView={{ opacity: 1, y: 0, x: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.9, delay: i * 0.1, ease: EASE }}
-              whileHover={{ y: -10 }}
-              className="absolute w-[17%] aspect-[4/5] rounded-[10px] md:rounded-[14px] overflow-hidden bg-white shadow-[0_24px_40px_-22px_rgba(0,0,0,0.5)]"
+              initial={{ opacity: 0, x: `${-94 * i}%`, y: `${-22 * i}%` }}
+              whileInView={{ opacity: 1, x: '0%', y: '0%' }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ ...SPRING, delay: 0.1 + i * 0.08 }}
+              className="absolute w-[17%] aspect-[4/5] will-change-transform"
               style={{ left: `${22 + i * 16}%`, top: `${8 + i * 12}%`, zIndex: i + 1 }}
               aria-label={bySlug(slug).client}
             >
-              <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+              <Lift className={`w-full h-full rounded-[10px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
+                <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+              </Lift>
             </motion.button>
           ))}
         </div>
@@ -835,7 +770,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
                 initial={{ opacity: 0, scale: 0.4, y: -30 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ type: 'spring', stiffness: 260, damping: 14, delay: 0.2 + i * 0.06 }}
+                transition={{ type: 'spring', stiffness: 160, damping: 18, delay: 0.2 + i * 0.06 }}
                 className="absolute"
                 style={{ left: s.l, top: s.t }}
               >
@@ -846,7 +781,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
         </div>
 
         <Reveal y={40}>
-          <div className="rounded-[16px] bg-white p-2.5 md:p-3 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.35)]">
+          <div className={`rounded-[16px] bg-white p-2.5 md:p-3 ${CARD}`}>
             <div className="flex items-center justify-between px-2 pt-1 pb-3">
               <span className="text-[13px] font-medium">{t.products.label}</span>
               <span className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-paper text-[11px] font-medium"><Icon name="plus" size={11} /> {t.products.store}</span>
@@ -943,7 +878,7 @@ function CommunitySection({ t }: { t: Copy }) {
 // ============================================
 function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
   const s = t.story
-  const cardBase = 'rounded-[16px] bg-white overflow-hidden shadow-[0_24px_50px_-40px_rgba(0,0,0,0.35)]'
+  const cardBase = `rounded-[16px] bg-white overflow-hidden ${CARD}`
   return (
     <section id="hakkimda" className="py-16 md:py-24">
       <div className={wrap}>
@@ -957,14 +892,13 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
             <Reveal className={`${cardBase} p-4 md:p-5`}>
               <button onClick={() => onPlay(films[0])} className="inline-flex items-center gap-1.5 text-[11px] font-medium"><span className="w-4 h-4 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="play" size={9} /></span>{s.a.chip}</button>
               <div className="relative h-[170px] md:h-[200px] my-4">
-                <Bubble tone="cobalt" className="left-[58%] top-0" delay={0.3}>@kamuran</Bubble>
                 {['01-recrea-sosyal-medya', '11-isijet-motion-graphic', '02-kamuran-kruvasan'].map((slug, i) => (
                   <motion.div
                     key={slug}
                     initial={{ rotate: 0, x: 0 }}
                     whileInView={{ rotate: (i - 1) * 9, x: (i - 1) * 26 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
+                    transition={{ ...SPRING, delay: 0.2 }}
                     className="absolute left-1/2 top-1/2 -ml-[52px] -mt-[70px] md:-ml-[60px] md:-mt-[80px]"
                     style={{ zIndex: i }}
                   >
@@ -1056,9 +990,6 @@ function WorkSection({ t, onPlay, onArchive }: { t: Copy; onPlay: (w: Work) => v
       <button onClick={() => onPlay(sel)} className="absolute top-3 right-3 inline-flex items-center gap-1 h-6 px-2.5 rounded-full bg-white text-ink text-[10px] font-bold">
         <Icon name="play" size={10} /> {t.work.like}
       </button>
-      <span className="absolute left-4 top-[34%]">
-        <span className="bubble relative inline-flex items-center h-6 px-2.5 rounded-full bg-flame/90 border border-white/30 text-white text-[11px] font-medium">{sel.handle}</span>
-      </span>
       <button onClick={() => onPlay(sel)} className="absolute bottom-3 left-3 right-3 flex items-center gap-2.5 text-left">
         <img src={poster(sel.slug)} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/40" />
         <span>
@@ -1090,7 +1021,8 @@ function WorkSection({ t, onPlay, onArchive }: { t: Copy; onPlay: (w: Work) => v
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.7, delay: (i % 5) * 0.05, ease: EASE }}
+                transition={{ ...SPRING, delay: (i % 5) * 0.05 }}
+                whileHover={{ y: -6 }}
                 onMouseEnter={() => c.work && setSel(c.work)}
                 onClick={() => (c.item ? onArchive(c.item) : lg ? onPlay(c.work!) : setSel(c.work!))}
                 className={`group relative aspect-[4/5] rounded-[12px] md:rounded-[14px] overflow-hidden bg-[#e9e9e7] ${c.work && sel.slug === c.work.slug && !lg ? 'ring-2 ring-flame ring-offset-2 ring-offset-paper' : ''}`}
@@ -1108,7 +1040,7 @@ function WorkSection({ t, onPlay, onArchive }: { t: Copy; onPlay: (w: Work) => v
                 initial={{ opacity: 0, scale: 0.85 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.9, ease: EASE }}
+                transition={SPRING}
                 className="w-full h-full"
               >
                 {Featured}
@@ -1193,19 +1125,21 @@ function ExperienceSection({ t }: { t: Copy }) {
             return (
               <motion.div
                 key={c.label}
-                initial={{ opacity: 0, y: 40, rotate: 0 }}
+                initial={{ opacity: 0, y: 50, rotate: 0 }}
                 whileInView={{ opacity: 1, y: hot ? -10 : 0, rotate: rot[i] }}
-                whileHover={{ rotate: 0, y: -18, zIndex: 20 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: i * 0.1, ease: EASE }}
-                className={`relative w-[31%] max-w-[170px] -mx-[1.5%] rounded-[14px] p-3 md:p-4 aspect-[0.86/1] flex flex-col shadow-[0_24px_40px_-24px_rgba(0,0,0,0.45)] ${hot ? 'bg-flame text-white z-10' : 'bg-white text-ink'}`}
+                whileHover={{ zIndex: 20 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ ...SPRING, delay: i * 0.08 }}
+                className={`relative w-[31%] max-w-[170px] -mx-[1.5%] will-change-transform ${hot ? 'z-10' : ''}`}
               >
+                <Lift y={-14} scale={1.02} rotate={-rot[i]} className={`rounded-[14px] p-3 md:p-4 aspect-[0.86/1] flex flex-col ${CARD} ${hot ? 'bg-flame text-white' : 'bg-white text-ink'}`}>
                 <div className="flex items-start justify-between gap-1">
                   <span className={`text-[10px] md:text-[11px] font-medium ${hot ? 'text-white/85' : 'text-body'}`}>{c.label}</span>
                   {hot && <span className="px-2 py-0.5 rounded-full bg-white text-ink text-[9px] font-bold -rotate-6">{(c as { badge: string }).badge}</span>}
                 </div>
                 <span className="title text-[26px] sm:text-[32px] md:text-[38px] mt-auto">{c.big}</span>
                 <span className={`text-[9px] md:text-[10px] mt-2 ${hot ? 'text-white/75' : 'text-mute'}`}>{c.small}</span>
+                </Lift>
               </motion.div>
             )
           })}
@@ -1268,7 +1202,7 @@ function BandSection({ t }: { t: Copy }) {
                 initial={{ y: -220, opacity: 0, rotate: -40 }}
                 whileInView={{ y: 0, opacity: 1, rotate: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ type: 'spring', stiffness: 140, damping: 11, delay: 0.1 + i * 0.07 }}
+                transition={{ type: 'spring', stiffness: 110, damping: 15, delay: 0.1 + i * 0.07 }}
                 style={{ marginTop: (i % 3) * 10 }}
               >
                 <IconDot name={n} size="w-9 h-9 md:w-11 md:h-11" />
@@ -1395,7 +1329,7 @@ function VideoModal({ playing, t, onClose }: { playing: Playing; t: Copy; onClos
         initial={{ scale: 0.94, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.94, opacity: 0, y: 20 }}
-        transition={{ duration: 0.45, ease: EASE }}
+        transition={{ type: 'spring', stiffness: 260, damping: 28 }}
         className={vertical ? 'w-full max-w-[min(400px,calc((100svh-150px)*9/16))]' : 'w-full max-w-5xl'}
         onClick={(e) => e.stopPropagation()}
       >
@@ -1439,7 +1373,6 @@ export default function HomePage() {
         <HeroSection t={t} onPlay={play} />
         <ShowcaseSection t={t} onPlay={play} />
         <ReelSection t={t} onPlay={play} />
-        <TrustedSection t={t} />
         <StatementSection t={t} />
         <ProductsSection t={t} onPlay={play} />
         <CommunitySection t={t} />

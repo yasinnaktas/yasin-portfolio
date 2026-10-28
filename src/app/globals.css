@@ -59,19 +59,6 @@ body {
   color: #fff;
 }
 
-/* Chat-bubble tag tail */
-.bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  margin-left: -4px;
-  background: inherit;
-  transform: rotate(45deg);
-  border-radius: 1px;
-}
 
 /* Soft edge fade for horizontal rows */
 .fade-x {
