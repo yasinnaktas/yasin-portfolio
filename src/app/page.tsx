@@ -1039,15 +1039,17 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
 const LAYOUT = { type: 'spring', stiffness: 210, damping: 30, mass: 0.9 } as const
 
 function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) => void }) {
-  const [open, setOpen] = useState<string | null>(null)
+  // origin = the tile the card grew out of (and returns to); slug = what's playing now.
+  // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
+  const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
   // 15 tiles: 13 works + two archive stills, so the 5×3 grid closes
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
   const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), fromArchive(archive[0]), fromArchive(archive[1])]
   const order = grid.filter((c) => c.work).map((c) => c.key)
-  const current = open ? bySlug(open) : null
-  const step = (d: number) => open && setOpen(order[(order.indexOf(open) + d + order.length) % order.length])
+  const current = open ? bySlug(open.slug) : null
+  const step = (d: number) => open && setOpen({ origin: open.origin, slug: order[(order.indexOf(open.slug) + d + order.length) % order.length] })
 
   useEffect(() => {
     if (!open) return
@@ -1083,11 +1085,11 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ ...SPRING, delay: (i % 5) * 0.05 }}
-              onClick={() => (c.item ? onArchive(c.item) : setOpen(c.key))}
+              onClick={() => (c.item ? onArchive(c.item) : setOpen({ origin: c.key, slug: c.key }))}
               className="group relative aspect-[4/5]"
               aria-label={c.label}
             >
-              {open === c.key ? (
+              {open?.origin === c.key ? (
                 <div className="absolute inset-0 rounded-[14px] bg-black/[0.04]" />
               ) : (
                 <motion.div layoutId={`work-${c.key}`} transition={LAYOUT} style={{ borderRadius: 14 }} className="absolute inset-0 overflow-hidden bg-[#e9e9e7]">
@@ -1112,16 +1114,23 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
             onClick={() => setOpen(null)}
           />
         )}
-        {current && (
+        {open && current && (
           <div key="stage" className="fixed inset-0 z-[95] flex flex-col items-center justify-center gap-4 p-4 pointer-events-none">
             <motion.div
-              layoutId={`work-${current.slug}`}
+              layoutId={`work-${open.origin}`}
               transition={LAYOUT}
               style={{ borderRadius: 20 }}
               className={`pointer-events-auto relative overflow-hidden bg-black ${CARD} ${current.vertical ? 'h-[min(76svh,760px)] aspect-[9/16]' : 'w-[min(92vw,1100px)] aspect-video'}`}
             >
-              <img src={poster(current.slug)} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <motion.div key={current.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="absolute inset-0">
+              {/* Keyed remount: the previous film unmounts at once, so two never play together */}
+              <motion.div
+                key={current.slug}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.35, delay: open.slug === open.origin ? 0.3 : 0 }}
+                className="absolute inset-0"
+              >
+                <img src={poster(current.slug)} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 <Player src={vsrc(current.slug)} poster={poster(current.slug)} unmuteLabel={t.work.unmute} className="absolute inset-0 w-full h-full object-contain bg-black" />
               </motion.div>
             </motion.div>
@@ -1133,7 +1142,8 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
               className="pointer-events-auto flex items-center gap-3 max-w-[92vw]"
             >
               <RoundBtn icon="arrowL" label="Previous" onClick={() => step(-1)} />
-              <div className="text-center min-w-0 px-1">
+              {/* Fixed width so the arrows stay put while captions change length */}
+              <div className="text-center w-[190px] sm:w-[260px] px-1">
                 <p className="text-[13px] md:text-[14px] font-bold tracking-[-0.02em] truncate">{current.client}{current.place ? ` · ${current.place}` : ''}</p>
                 <p className="text-[11px] text-body truncate">{current.title} — {t.work.cats[current.category]}</p>
               </div>
