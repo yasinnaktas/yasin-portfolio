@@ -7,7 +7,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView,
 // TYPES
 // ============================================
 type Lang = 'tr' | 'en'
-type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'ai' | 'doc'
+type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'recipe' | 'ai' | 'doc'
 type Tone = 'ink' | 'mute' | 'maroon'
 // A headline is a list of [text, tone]; '\n' inside text breaks the line
 type Parts = [string, Tone?][]
@@ -32,6 +32,7 @@ const works: Work[] = [
   { slug: '08-zuber-3d-urun-filmi', client: 'Züber', title: '3D Ürün Filmi', category: 'threeD', vertical: true },
   { slug: '11-isijet-motion-graphic', client: 'Isıjet', title: 'Kurutma Çözümleri', category: 'motion', vertical: true },
   { slug: '01-recrea-sosyal-medya', client: 'Recrea', title: 'İncirli & Cevizli Kurabiye', category: 'ad', vertical: true },
+  { slug: '16-recrea-tarif', client: 'Recrea', title: 'Peynir Tabağı Tarifi', category: 'recipe', vertical: true },
   { slug: '09-linde-29-ekim', client: 'Linde', title: '29 Ekim Cumhuriyet Bayramı', category: 'social', vertical: true },
   { slug: '04-kamuran-kreatif-kisa-film', client: 'Kamuran', title: 'Cadılar Bayramı', category: 'social', vertical: true },
 ]
@@ -91,7 +92,7 @@ const copy = {
       'Medya', 'kuruluşlarında', '4', 'yıl', 'Kreatif', 'Videographer', 'olarak', { img: poster('07-ibb-bulgur-palas-drone') }, 'marka', 'kampanyaları', 've', 'haber', 'içerikleri', 'ürettim.',
       'Creative', 'Touch', 'Productions', 'ile', 'içerik', 'üreten', 'değil,', { hl: 'süreci' }, 'yöneten', { img: poster('12-claudie-miami') }, 'bir', 'konuma', 'geçtim.',
     ] as Token[],
-    stair: { title: 'Seçili işler', meta: '13 film · 2026', desc: 'Reklam filmi, 3D animasyon, drone ve sosyal medya içerikleri.' },
+    stair: { title: 'Seçili işler', meta: '14 film · 2026', desc: 'Reklam filmi, 3D animasyon, drone ve sosyal medya içerikleri.' },
     products: {
       title: [['Fikirden\n'], ['App Store’a.', 'mute']] as Parts,
       desc: 'Yapay zeka destekli geliştirme yaklaşımıyla üç iOS uygulamasını fikirden App Store’a taşıdım.',
@@ -129,7 +130,7 @@ const copy = {
       desc: 'Bir işe tıklayın, ortada büyüsün ve oynasın. Kapatınca ızgaraya dönün.',
       like: 'İzle',
       unmute: 'Sesi aç',
-      cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', ai: 'AI Video', doc: 'Belgesel' } as Record<CategoryKey, string>,
+      cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', recipe: 'Tarif Videosu', ai: 'AI Video', doc: 'Belgesel' } as Record<CategoryKey, string>,
     },
     archive: {
       kicker: ['Arşiv', 'Önceki işler'],
@@ -194,7 +195,7 @@ const copy = {
       'I', 'spent', '4', 'years', 'as', 'a', 'Creative', 'Videographer', { img: poster('07-ibb-bulgur-palas-drone') }, 'producing', 'brand', 'campaigns', 'and', 'news', 'content.',
       'With', 'Creative', 'Touch', 'Productions', 'I', 'moved', 'from', 'making', 'content', 'to', { hl: 'running' }, 'the', 'process.', { img: poster('12-claudie-miami') },
     ] as Token[],
-    stair: { title: 'Selected work', meta: '13 films · 2026', desc: 'Ad films, 3D animation, drone and social media content.' },
+    stair: { title: 'Selected work', meta: '14 films · 2026', desc: 'Ad films, 3D animation, drone and social media content.' },
     products: {
       title: [['From idea\n'], ['to the App Store.', 'mute']] as Parts,
       desc: 'With an AI-assisted development approach, I took three iOS apps from idea to the App Store.',
@@ -232,7 +233,7 @@ const copy = {
       desc: 'Click a piece and it grows into the centre and plays. Close it to return to the grid.',
       like: 'Watch',
       unmute: 'Unmute',
-      cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', ai: 'AI Video', doc: 'Documentary' } as Record<CategoryKey, string>,
+      cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', recipe: 'Recipe Video', ai: 'AI Video', doc: 'Documentary' } as Record<CategoryKey, string>,
     },
     archive: {
       kicker: ['Archive', 'Earlier work'],
@@ -1042,11 +1043,11 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
   // origin = the tile the card grew out of (and returns to); slug = what's playing now.
   // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
   const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
-  // 15 tiles: 13 works + two archive stills, so the 5×3 grid closes
+  // 15 tiles: 14 works + one archive still, so the 5×3 grid closes
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
-  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), fromArchive(archive[0]), fromArchive(archive[1])]
+  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), fromArchive(archive[0])]
   const order = grid.filter((c) => c.work).map((c) => c.key)
   const current = open ? bySlug(open.slug) : null
   const step = (d: number) => open && setOpen({ origin: open.origin, slug: order[(order.indexOf(open.slug) + d + order.length) % order.length] })
