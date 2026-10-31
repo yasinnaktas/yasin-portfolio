@@ -622,9 +622,29 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
             <span key={part}>{i > 0 && <span className="text-mute mx-2">/</span>}{part}</span>
           ))}
         </motion.p>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.8 }} className="flex items-center justify-center gap-2 mt-6">
-          <a href="#isler" className={btnDark}>{t.hero.cta1}</a>
-          <button onClick={() => onPlay(reelOf(t))} className={btnGhost}><Icon name="play" size={14} /> {t.hero.cta2}</button>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.8 }} className="flex flex-wrap items-center justify-center gap-3 mt-7">
+          {/* The reel is the lead action: a live thumbnail pill, not a text link */}
+          <motion.button
+            onClick={() => onPlay(reelOf(t))}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            transition={HOVER}
+            className={`group inline-flex items-center gap-3 h-14 pl-1.5 pr-6 rounded-full bg-white ${CARD}`}
+          >
+            <span className="relative w-[76px] h-11 rounded-full overflow-hidden bg-ink">
+              <AutoVideo src="/videos/showreel-teaser.mp4" className="absolute inset-0 w-full h-full object-cover" />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/25 group-hover:bg-black/10 transition-colors">
+                <span className="w-7 h-7 rounded-full bg-white text-ink flex items-center justify-center">
+                  <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5l5.5 3.5L3 8.5z" fill="currentColor" /></svg>
+                </span>
+              </span>
+            </span>
+            <span className="text-left leading-tight">
+              <span className="block text-[14px] font-bold tracking-[-0.02em]">{t.hero.cta2} 2026</span>
+              <span className="block text-[11px] font-medium text-mute">0:50</span>
+            </span>
+          </motion.button>
+          <a href="#isler" className={`${btnDark} h-14 px-6 text-[13px]`}>{t.hero.cta1}</a>
         </motion.div>
       </div>
     </section>
