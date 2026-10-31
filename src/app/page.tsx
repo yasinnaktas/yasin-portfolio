@@ -7,7 +7,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView,
 // TYPES
 // ============================================
 type Lang = 'tr' | 'en'
-type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'recipe' | 'ai' | 'doc'
+type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'recipe' | 'ai' | 'doc' | 'reel'
 type Tone = 'ink' | 'mute' | 'maroon'
 // A headline is a list of [text, tone]; '\n' inside text breaks the line
 type Parts = [string, Tone?][]
@@ -18,26 +18,39 @@ type Token = string | { img: string } | { hl: string }
 // PROJECT DATA
 // ============================================
 // Self-hosted work: /public/videos/<slug>.mp4 + <slug>.jpg poster
-type Work = { slug: string; client: string; place?: string; title: string; category: CategoryKey; vertical: boolean }
+type RoleKey = 'concept' | 'direction' | 'shoot' | 'drone' | 'edit' | 'color' | 'ai' | 'motion' | 'sound'
+// Every piece ran idea-to-release in-house; roles name the crafts each one needed
+const LIVE: RoleKey[] = ['concept', 'direction', 'shoot', 'edit', 'color']
+const CG: RoleKey[] = ['concept', 'ai', 'motion', 'edit', 'sound']
+const MOTION: RoleKey[] = ['concept', 'motion', 'edit', 'sound']
+
+type Work = { slug: string; client: string; place?: string; title: string; en: string; category: CategoryKey; vertical: boolean; roles: RoleKey[] }
 
 const works: Work[] = [
-  { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', category: 'brand', vertical: false },
-  { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', title: '3D Animasyon Reklam', category: 'threeD', vertical: false },
-  { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', category: 'food', vertical: false },
-  { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', category: 'food', vertical: true },
-  { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', category: 'food', vertical: true },
-  { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', category: 'food', vertical: true },
-  { slug: '07-ibb-bulgur-palas-drone', client: 'İBB', place: 'Bulgur Palas', title: 'Drone Tanıtım', category: 'drone', vertical: true },
-  { slug: '02-kamuran-kruvasan', client: 'Kamuran', title: 'Kruvasan', category: 'ad', vertical: true },
-  { slug: '08-zuber-3d-urun-filmi', client: 'Züber', title: '3D Ürün Filmi', category: 'threeD', vertical: true },
-  { slug: '11-isijet-motion-graphic', client: 'Isıjet', title: 'Kurutma Çözümleri', category: 'motion', vertical: true },
-  { slug: '01-recrea-sosyal-medya', client: 'Recrea', title: 'İncirli & Cevizli Kurabiye', category: 'ad', vertical: true },
-  { slug: '16-recrea-tarif', client: 'Recrea', title: 'Peynir Tabağı Tarifi', category: 'recipe', vertical: true },
-  { slug: '09-linde-29-ekim', client: 'Linde', title: '29 Ekim Cumhuriyet Bayramı', category: 'social', vertical: true },
-  { slug: '04-kamuran-kreatif-kisa-film', client: 'Kamuran', title: 'Cadılar Bayramı', category: 'social', vertical: true },
+  { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', en: 'Venue Film', category: 'brand', vertical: false, roles: LIVE },
+  { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', title: '3D Animasyon Reklam', en: '3D Animated Ad', category: 'threeD', vertical: false, roles: CG },
+  { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', en: 'Behind Every Plate', category: 'food', vertical: false, roles: LIVE },
+  { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', en: 'Weekday Lunch', category: 'food', vertical: true, roles: LIVE },
+  { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', en: 'Prime Cut Ribeye', category: 'food', vertical: true, roles: LIVE },
+  { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', en: 'Something Better', category: 'food', vertical: true, roles: LIVE },
+  { slug: '07-ibb-bulgur-palas-drone', client: 'İBB', place: 'Bulgur Palas', title: 'Drone Tanıtım', en: 'Aerial Film', category: 'drone', vertical: true, roles: ['concept', 'direction', 'drone', 'edit', 'color'] },
+  { slug: '02-kamuran-kruvasan', client: 'Kamuran', title: 'Kruvasan', en: 'Croissant', category: 'ad', vertical: true, roles: LIVE },
+  { slug: '08-zuber-3d-urun-filmi', client: 'Züber', title: '3D Ürün Filmi', en: '3D Product Film', category: 'threeD', vertical: true, roles: CG },
+  { slug: '11-isijet-motion-graphic', client: 'Isıjet', title: 'Kurutma Çözümleri', en: 'Drying Solutions', category: 'motion', vertical: true, roles: MOTION },
+  { slug: '01-recrea-sosyal-medya', client: 'Recrea', title: 'İncirli & Cevizli Kurabiye', en: 'Fig & Walnut Cookies', category: 'ad', vertical: true, roles: CG },
+  { slug: '16-recrea-tarif', client: 'Recrea', title: 'Peynir Tabağı Tarifi', en: 'Cheese Board Recipe', category: 'recipe', vertical: true, roles: LIVE },
+  { slug: '09-linde-29-ekim', client: 'Linde', title: '29 Ekim Cumhuriyet Bayramı', en: 'Republic Day, 29 October', category: 'social', vertical: true, roles: MOTION },
+  { slug: '04-kamuran-kreatif-kisa-film', client: 'Kamuran', title: 'Cadılar Bayramı', en: 'Halloween', category: 'social', vertical: true, roles: LIVE },
 ]
 
 const bySlug = (s: string) => works.find(w => w.slug === s)!
+const titleOf = (w: Work, t: { lang: Lang }) => (t.lang === 'en' ? w.en : w.title)
+// The showreel is cut twice; only its typography differs, so each language opens its own master
+const reelOf = (t: { lang: Lang }): Work => ({
+  slug: `showreel-${t.lang}`, client: 'Yasin Aktaş', title: 'Showreel 2026', en: 'Showreel 2026',
+  category: 'reel', vertical: false, roles: ['concept', 'direction', 'edit', 'motion', 'sound'],
+})
+const placeOf = (w: Work, t: { lang: Lang }) => (w.place && t.lang === 'en' ? w.place.replace('İstanbul', 'Istanbul') : w.place)
 const films = works.filter(w => !w.vertical)
 const verticals = works.filter(w => w.vertical)
 
@@ -69,6 +82,9 @@ const poster = (slug: string) => `/videos/${slug}.jpg`
 // ============================================
 const copy = {
   tr: {
+    lang: 'tr' as Lang,
+    roles: { concept: 'Konsept', direction: 'Yönetmenlik', shoot: 'Çekim', drone: 'Drone çekimi', edit: 'Kurgu', color: 'Renk', ai: 'Yapay zeka / 3D', motion: 'Motion design', sound: 'Ses' } as Record<RoleKey, string>,
+    archiveRole: 'Rol: Creative Videographer',
     nav: { projects: 'İşler', about: 'Hakkımda', products: 'Ürünler', experience: 'Deneyim', contact: 'İletişim' },
     hero: {
       title: [['Video prodüksiyon\nve kreatif liderlik.']] as Parts,
@@ -84,7 +100,7 @@ const copy = {
       cta2: 'Hakkımda',
     },
     reel: {
-      kicker: ['Showreel', 'Yasin Aktaş'],
+      kicker: ['Öne çıkan', 'filmler'],
       title: [['Kameradan\n'], ['kreatif '], ['liderliğe.', 'mute']] as Parts,
       watch: 'İzle',
     },
@@ -113,7 +129,15 @@ const copy = {
     community: {
       title: [['1000+ marka,\n'], ['10 kişilik ekip.', 'mute']] as Parts,
       desc: 'Creative Touch Productions’ta 10 kişilik bir ekibi yöneterek binden fazla markaya reklam filmi, yapay zeka destekli video ve dijital danışmanlık hizmeti sundum.',
-      stats: [ ['50M+', 'izlenme'], ['500+', 'video'], ['10', 'kişilik ekip'], ['15M₺', 'bütçe'], ['+%35', 'etkileşim'] ],
+      // [value, label, source · period, what it counts and my part in it]
+      stats: [
+        ['1000+', 'marka', 'Creative Touch · 2025–26', 'Ajans olarak içerik ürettiğimiz markalar.'],
+        ['50M+', 'izlenme', 'Creative Touch · 2025–26', 'Ajans döneminde ürettiğim içeriklerin yayın platformlarındaki toplam izlenmesi.'],
+        ['15M₺', 'reklam bütçesi', 'Creative Touch · 2025–26', 'Yönettiğim toplam müşteri reklam harcaması.'],
+        ['+%35', 'dönüşüm', 'Creative Touch · 2025–26', 'Çalıştığım markaların kampanyalarında ortalama dönüşüm oranı artışı.'],
+        ['10', 'kişilik ekip', 'Creative Touch · 2025–26', 'Doğrudan yönettiğim ekip.'],
+        ['500+', 'video', 'Turkuvaz Medya · 2021–25', 'Kreatif Videographer olarak çekip kurguladığım tamamlanmış videolar.'],
+      ] as [string, string, string, string][],
     },
     story: {
       kicker: ['Hakkımda', 'Yetkinlikler'],
@@ -127,10 +151,10 @@ const copy = {
     work: {
       kicker: ['Portföy', '2026'],
       title: [['Seçili işler,\n'], ['2026.', 'mute']] as Parts,
-      desc: 'Bir işe tıklayın, ortada büyüsün ve oynasın. Kapatınca ızgaraya dönün.',
+      desc: 'Tüm işlerde fikirden yayına bütün süreç bende: konsept, yönetmenlik, çekim, kurgu, renk ve müşteri yönetimi.',
       like: 'İzle',
       unmute: 'Sesi aç',
-      cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', recipe: 'Tarif Videosu', ai: 'AI Video', doc: 'Belgesel' } as Record<CategoryKey, string>,
+      cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', recipe: 'Tarif Videosu', ai: 'AI Video', doc: 'Belgesel', reel: 'Showreel' } as Record<CategoryKey, string>,
     },
     archive: {
       kicker: ['Arşiv', 'Önceki işler'],
@@ -172,6 +196,9 @@ const copy = {
     },
   },
   en: {
+    lang: 'en' as Lang,
+    roles: { concept: 'Concept', direction: 'Direction', shoot: 'Cinematography', drone: 'Drone', edit: 'Editing', color: 'Colour', ai: 'AI / 3D', motion: 'Motion design', sound: 'Sound' } as Record<RoleKey, string>,
+    archiveRole: 'Role: Creative Videographer',
     nav: { projects: 'Work', about: 'About', products: 'Products', experience: 'Experience', contact: 'Contact' },
     hero: {
       title: [['Video production and\ncreative leadership.']] as Parts,
@@ -187,7 +214,7 @@ const copy = {
       cta2: 'About me',
     },
     reel: {
-      kicker: ['Showreel', 'Yasin Aktaş'],
+      kicker: ['Featured', 'films'],
       title: [['From the camera\n'], ['to creative '], ['leadership.', 'mute']] as Parts,
       watch: 'Watch',
     },
@@ -216,7 +243,14 @@ const copy = {
     community: {
       title: [['1000+ brands,\n'], ['a team of 10.', 'mute']] as Parts,
       desc: 'At Creative Touch Productions I led a 10-person team delivering ad films, AI-assisted video and digital consultancy to over a thousand brands.',
-      stats: [ ['50M+', 'views'], ['500+', 'videos'], ['10', 'person team'], ['15M₺', 'budget'], ['+35%', 'engagement'] ],
+      stats: [
+        ['1000+', 'brands', 'Creative Touch · 2025–26', 'Brands the agency produced content for.'],
+        ['50M+', 'views', 'Creative Touch · 2025–26', 'Total platform views of the content I produced at the agency.'],
+        ['15M₺', 'ad spend', 'Creative Touch · 2025–26', 'Total client advertising budget I managed.'],
+        ['+35%', 'conversion', 'Creative Touch · 2025–26', 'Average conversion-rate lift across the brands I worked with.'],
+        ['10', 'person team', 'Creative Touch · 2025–26', 'The team I led directly.'],
+        ['500+', 'videos', 'Turkuvaz Media · 2021–25', 'Finished videos I shot and edited as a Creative Videographer.'],
+      ] as [string, string, string, string][],
     },
     story: {
       kicker: ['About', 'Skills'],
@@ -230,10 +264,10 @@ const copy = {
     work: {
       kicker: ['Portfolio', '2026'],
       title: [['Selected work,\n'], ['2026.', 'mute']] as Parts,
-      desc: 'Click a piece and it grows into the centre and plays. Close it to return to the grid.',
+      desc: 'Every piece, idea to release, handled end to end: concept, direction, cinematography, editing, colour and client management.',
       like: 'Watch',
       unmute: 'Unmute',
-      cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', recipe: 'Recipe Video', ai: 'AI Video', doc: 'Documentary' } as Record<CategoryKey, string>,
+      cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', recipe: 'Recipe Video', ai: 'AI Video', doc: 'Documentary', reel: 'Showreel' } as Record<CategoryKey, string>,
     },
     archive: {
       kicker: ['Archive', 'Earlier work'],
@@ -590,7 +624,7 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.8 }} className="flex items-center justify-center gap-2 mt-6">
           <a href="#isler" className={btnDark}>{t.hero.cta1}</a>
-          <button onClick={() => onPlay(films[0])} className={btnGhost}><Icon name="play" size={14} /> {t.hero.cta2}</button>
+          <button onClick={() => onPlay(reelOf(t))} className={btnGhost}><Icon name="play" size={14} /> {t.hero.cta2}</button>
         </motion.div>
       </div>
     </section>
@@ -704,7 +738,7 @@ function ReelSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
             </div>
             <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-white/80 text-[11px] font-medium mb-2">{w.client} — {w.title}</p>
+                <p className="text-white/80 text-[11px] font-medium mb-2">{w.client} — {titleOf(w, t)}</p>
                 <button onClick={() => onPlay(w)} className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-white text-ink text-[11px] font-semibold hover:bg-white/85 transition-colors">
                   <Icon name="play" size={12} /> {t.reel.watch}
                 </button>
@@ -935,13 +969,15 @@ function CommunitySection({ t }: { t: Copy }) {
         <Icon name="spark" size={14} className="mx-auto mb-5 text-ink/70" />
         <Title parts={t.community.title} center className="text-[32px] md:text-[44px]" />
         <Reveal delay={0.2}><p className="text-[12px] md:text-[13px] text-body max-w-[340px] mx-auto mt-3 leading-relaxed">{t.community.desc}</p></Reveal>
-        <div className="flex flex-wrap justify-center gap-2 mt-7">
-          {t.community.stats.map(([v, l], i) => (
-            <Reveal key={l} delay={0.25 + i * 0.05}>
-              <span className="inline-flex items-baseline gap-1.5 h-9 px-4 rounded-full bg-white shadow-[0_8px_20px_-14px_rgba(0,0,0,0.35)] items-center">
-                <span className="text-[14px] font-bold tracking-[-0.03em]">{v}</span>
-                <span className="text-[11px] text-body">{l}</span>
-              </span>
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 max-w-[900px] mx-auto mt-9 text-left">
+          {t.community.stats.map(([v, l, source, note], i) => (
+            <Reveal key={l} delay={0.2 + i * 0.05} className={`rounded-[14px] bg-white p-4 md:p-5 ${CARD}`}>
+              <p lang="en" className="text-[9.5px] md:text-[10px] font-semibold tracking-[0.06em] uppercase text-mute mb-2">{source}</p>
+              <p className="flex items-baseline gap-1.5">
+                <span className="title text-[26px] md:text-[32px]">{v}</span>
+                <span className="text-[12px] md:text-[13px] font-medium text-body">{l}</span>
+              </p>
+              <p className="text-[10.5px] md:text-[11px] text-mute leading-snug mt-2">{note}</p>
             </Reveal>
           ))}
         </div>
@@ -968,7 +1004,7 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
           <div className="space-y-4 md:space-y-5">
             {/* A — production */}
             <Reveal className={`${cardBase} p-4 md:p-5`}>
-              <button onClick={() => onPlay(films[0])} className="inline-flex items-center gap-1.5 text-[11px] font-medium"><span className="w-4 h-4 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="play" size={9} /></span>{s.a.chip}</button>
+              <button onClick={() => onPlay(reelOf(t))} className="inline-flex items-center gap-1.5 text-[11px] font-medium"><span className="w-4 h-4 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="play" size={9} /></span>{s.a.chip}</button>
               <div className="relative h-[170px] md:h-[200px] my-4">
                 {['01-recrea-sosyal-medya', '11-isijet-motion-graphic', '02-kamuran-kruvasan'].map((slug, i) => (
                   <motion.div
@@ -986,7 +1022,7 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
               </div>
               <p className="text-[14px] font-bold tracking-[-0.02em]">{s.a.title}</p>
               <p className="text-[11px] md:text-[12px] text-body mt-1 leading-relaxed">{s.a.desc}</p>
-              <button onClick={() => onPlay(films[0])} className={`${btnGhost} h-8 px-3 mt-3 -ml-3`}>{s.a.cta}</button>
+              <button onClick={() => onPlay(reelOf(t))} className={`${btnGhost} h-8 px-3 mt-3 -ml-3`}>{s.a.cta}</button>
             </Reveal>
 
             {/* C — leadership */}
@@ -1145,14 +1181,24 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
               <RoundBtn icon="arrowL" label="Previous" onClick={() => step(-1)} />
               {/* Fixed width so the arrows stay put while captions change length */}
               <div className="text-center w-[190px] sm:w-[260px] px-1">
-                <p className="text-[13px] md:text-[14px] font-bold tracking-[-0.02em] truncate">{current.client}{current.place ? ` · ${current.place}` : ''}</p>
-                <p className="text-[11px] text-body truncate">{current.title} — {t.work.cats[current.category]}</p>
+                <p className="text-[13px] md:text-[14px] font-bold tracking-[-0.02em] truncate">{current.client}{placeOf(current, t) ? ` · ${placeOf(current, t)}` : ''}</p>
+                <p className="text-[11px] text-body leading-snug line-clamp-2">{titleOf(current, t)} — {t.work.cats[current.category]}</p>
               </div>
               <RoundBtn icon="arrowR" label="Next" onClick={() => step(1)} />
               <button onClick={() => setOpen(null)} aria-label="Close" className="ml-2 w-9 h-9 rounded-full bg-ink text-white flex items-center justify-center">
                 <Icon name="plus" size={15} className="rotate-45" />
               </button>
             </motion.div>
+            {/* Roles get their own full-width line so they never truncate on phones */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.25, duration: 0.35 }}
+              className="pointer-events-auto -mt-2 max-w-[92vw] text-center text-[11px] text-mute leading-snug"
+            >
+              {current.roles.map((r) => t.roles[r]).join(' · ')}
+            </motion.p>
           </div>
         )}
       </AnimatePresence>
@@ -1198,7 +1244,7 @@ function ArchiveSection({ t, onPlay }: { t: Copy; onPlay: (a: ArchiveItem) => vo
                     <img src={a.thumbnail} alt={a.title} onError={thumbFallback} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </div>
                   <p className="text-[12px] font-bold tracking-[-0.02em] mt-2.5 truncate">{a.title}</p>
-                  <p className="text-[10px] text-mute">{t.work.cats[a.category]} · {a.year}</p>
+                  <p className="text-[10px] text-mute">{t.work.cats[a.category]} · {a.year} · {t.archiveRole.split(': ')[1]}</p>
                 </button>
               </Reveal>
             ))}
@@ -1426,9 +1472,9 @@ function VideoModal({ playing, t, onClose }: { playing: Playing; t: Copy; onClos
   }, [onClose])
 
   const vertical = playing.kind === 'file' ? playing.work.vertical : !!playing.item.isShort
-  const title = playing.kind === 'file' ? playing.work.title : playing.item.title
+  const title = playing.kind === 'file' ? titleOf(playing.work, t) : playing.item.title
   const meta = playing.kind === 'file'
-    ? `${playing.work.client}${playing.work.place ? ` · ${playing.work.place}` : ''} — ${t.work.cats[playing.work.category]}`
+    ? `${playing.work.client}${placeOf(playing.work, t) ? ` · ${placeOf(playing.work, t)}` : ''} — ${t.work.cats[playing.work.category]}`
     : `${t.work.cats[playing.item.category]} — ${playing.item.year}`
 
   return (
@@ -1447,6 +1493,7 @@ function VideoModal({ playing, t, onClose }: { playing: Playing; t: Copy; onClos
         <div className="mb-3 px-1">
           <p className="text-[11px] text-body">{meta}</p>
           <p className="title text-[22px] md:text-[28px]">{title}</p>
+          <p className="text-[11px] text-mute mt-1">{playing.kind === 'file' ? playing.work.roles.map((r) => t.roles[r]).join(' · ') : t.archiveRole}</p>
         </div>
         <div className={`overflow-hidden rounded-[16px] bg-black shadow-[0_40px_80px_-30px_rgba(0,0,0,0.5)] ${vertical ? 'aspect-[9/16]' : 'aspect-video'}`}>
           {playing.kind === 'file' ? (
