@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView, MotionValue } from 'framer-motion'
+import { type Lang, savedLang, rememberLang, withLang } from '@/lib/lang'
 
 // ============================================
 // TYPES
 // ============================================
-type Lang = 'tr' | 'en'
 type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'recipe' | 'ai' | 'doc' | 'reel'
 type Tone = 'ink' | 'mute' | 'maroon'
 // A headline is a list of [text, tone]; '\n' inside text breaks the line
@@ -47,7 +47,7 @@ const bySlug = (s: string) => works.find(w => w.slug === s)!
 const titleOf = (w: Work, t: { lang: Lang }) => (t.lang === 'en' ? w.en : w.title)
 // The showreel is cut twice; only its typography differs, so each language plays its own master
 const reelSlug = (t: { lang: Lang }) => `showreel-${t.lang}`
-const reelPage = (t: { lang: Lang }) => (t.lang === 'en' ? '/showreel?lang=en' : '/showreel')
+const reelPage = (t: { lang: Lang }) => withLang('/showreel', t.lang)
 const placeOf = (w: Work, t: { lang: Lang }) => (w.place && t.lang === 'en' ? w.place.replace('İstanbul', 'Istanbul') : w.place)
 const films = works.filter(w => !w.vertical)
 const verticals = works.filter(w => w.vertical)
@@ -1698,7 +1698,20 @@ export default function HomePage() {
   const reel = useRef<(() => void) | null>(null)
   const watchReel = () => reel.current?.()
 
-  useEffect(() => { document.documentElement.lang = lang }, [lang])
+  // Language follows the viewer between pages; save only once the saved choice has been read
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const saved = savedLang()
+    if (saved) setLang(saved)
+    setReady(true)
+  }, [])
+  useEffect(() => { if (ready) rememberLang(lang) }, [lang, ready])
+  // The browser's own jump to #isler etc. happens before the page has its height, so redo it once rendered
+  useEffect(() => {
+    if (!ready || !window.location.hash) return
+    const id = decodeURIComponent(window.location.hash.slice(1))
+    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView())
+  }, [ready])
 
   return (
     <>

@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { type Lang, savedLang, rememberLang, withLang } from '@/lib/lang'
 
 // A shareable page that is nothing but the reel: it starts playing (muted) the moment it
 // opens, and one tap brings the sound in from the top. ?lang=en opens the English cut.
-type Lang = 'tr' | 'en'
 
 const copy = {
   tr: {
@@ -50,8 +50,12 @@ export default function ShowreelView() {
   const ref = useRef<HTMLVideoElement>(null)
   const c = copy[lang]
 
+  const [ready, setReady] = useState(false)
+
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('lang') === 'en') setLang('en')
+    const saved = savedLang()
+    if (saved) setLang(saved)
+    setReady(true)
     // React doesn't reliably write `muted`, and without it phones refuse to autoplay
     const v = ref.current
     if (!v) return
@@ -62,15 +66,11 @@ export default function ShowreelView() {
 
   // A language switch swaps the source; muted carries over, so sound stays as the viewer left it
   useEffect(() => {
-    document.documentElement.lang = lang
+    if (ready) rememberLang(lang)
     ref.current?.play().catch(() => {})
-  }, [lang])
+  }, [lang, ready])
 
-  const switchLang = () => {
-    const next = lang === 'tr' ? 'en' : 'tr'
-    setLang(next)
-    window.history.replaceState(null, '', next === 'en' ? '?lang=en' : window.location.pathname)
-  }
+  const switchLang = () => setLang(lang === 'tr' ? 'en' : 'tr')
 
   const withSound = () => {
     const v = ref.current
@@ -87,12 +87,12 @@ export default function ShowreelView() {
   return (
     <>
       <header className={`${wrap} h-14 flex items-center justify-between`}>
-        <a href="/" className="text-[17px] md:text-[18px] font-bold tracking-[-0.035em] leading-none">Yasin Aktaş</a>
+        <a href={withLang('/', lang)} className="text-[17px] md:text-[18px] font-bold tracking-[-0.035em] leading-none">Yasin Aktaş</a>
         <div className="flex items-center gap-1.5">
           <button onClick={switchLang} className="h-8 px-3 rounded-full text-[11px] font-bold text-body hover:text-ink hover:bg-black/[0.04] transition-colors" aria-label="Change language">
             {lang === 'tr' ? 'EN' : 'TR'}
           </button>
-          <a href="/#isler" className={`${btnGhost} h-8 hidden sm:inline-flex`}>{c.work}</a>
+          <a href={withLang('/#isler', lang)} className={`${btnGhost} h-8 hidden sm:inline-flex`}>{c.work}</a>
           <a href={MAIL} className={`${btnDark} h-8`}>{c.contact}</a>
         </div>
       </header>
@@ -160,7 +160,7 @@ export default function ShowreelView() {
         </div>
 
         <div className={`${wrap} mt-10 flex flex-wrap items-center justify-center gap-2`}>
-          <a href="/#isler" className={`${btnDark} h-12 px-6 text-[13px]`}>{c.more}</a>
+          <a href={withLang('/#isler', lang)} className={`${btnDark} h-12 px-6 text-[13px]`}>{c.more}</a>
           <a href={MAIL} className={`${btnGhost} h-12 px-6 text-[13px]`}>{c.hire}</a>
         </div>
       </main>
