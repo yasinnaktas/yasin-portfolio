@@ -34,7 +34,15 @@ const nextConfig = {
     unoptimized: true,
   },
   async headers() {
-    return [{ source: '/:path*', headers: securityHeaders }]
+    // Media keeps its file name when replaced, so it isn't cached forever: a week, then
+    // served from cache while the browser checks for a newer copy in the background
+    const media = [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=2592000' }]
+    return [
+      { source: '/:path*', headers: securityHeaders },
+      { source: '/videos/:path*', headers: media },
+      { source: '/apps/:path*', headers: media },
+      { source: '/thumbnails/:path*', headers: media },
+    ]
   },
 }
 

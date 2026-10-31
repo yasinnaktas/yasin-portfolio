@@ -64,10 +64,10 @@ const yt = (id: string) => `https://img.youtube.com/vi/${id}/maxresdefault.jpg`
 const archive: ArchiveItem[] = [
   { id: 1, title: 'AI Creative Project', category: 'ad', youtubeId: 'KooyeFCgugQ', thumbnail: yt('KooyeFCgugQ'), year: '2026' },
   { id: 8, title: 'Brand Film', category: 'ai', youtubeId: 'AKoHR01gtTo', thumbnail: yt('AKoHR01gtTo'), year: '2026' },
-  { id: 7, title: 'Product Launch Film', category: 'ad', youtubeId: 'Jmonxy8U3mU', thumbnail: '/thumbnails/thumb7.jpg', year: '2024' },
-  { id: 4, title: 'Social Media Series', category: 'social', youtubeId: 'vrYuv7i9HUM', thumbnail: '/thumbnails/thumb4.jpg', year: '2023' },
-  { id: 5, title: 'Corporate Documentary', category: 'doc', youtubeId: 'K2H-thz48TI', thumbnail: '/thumbnails/thumb5.jpg', year: '2023' },
-  { id: 3, title: 'AI-Powered Commercial', category: 'ai', youtubeId: '8-YxCmFjRLA', thumbnail: '/thumbnails/thumb3.jpg', year: '2024', isShort: true },
+  { id: 7, title: 'Product Launch Film', category: 'ad', youtubeId: 'Jmonxy8U3mU', thumbnail: '/thumbnails/thumb7.webp', year: '2024' },
+  { id: 4, title: 'Social Media Series', category: 'social', youtubeId: 'vrYuv7i9HUM', thumbnail: '/thumbnails/thumb4.webp', year: '2023' },
+  { id: 5, title: 'Corporate Documentary', category: 'doc', youtubeId: 'K2H-thz48TI', thumbnail: '/thumbnails/thumb5.webp', year: '2023' },
+  { id: 3, title: 'AI-Powered Commercial', category: 'ai', youtubeId: '8-YxCmFjRLA', thumbnail: '/thumbnails/thumb3.webp', year: '2024', isShort: true },
 ]
 
 type Playing = { kind: 'file'; work: Work } | { kind: 'yt'; item: ArchiveItem }
@@ -122,13 +122,13 @@ const copy = {
       label: 'Uygulamalar',
       store: 'App Store',
       apps: [
-        { name: 'Speego', tag: 'Yapay zeka konuşma koçu', icon: '/apps/speego.png',
+        { name: 'Speego', tag: 'Yapay zeka konuşma koçu', icon: '/apps/speego.webp',
           desc: '30 saniyelik video kaydından ton, akıcılık, beden dili ve netlik analizi. Mülakat, sunum ve topluluk önünde konuşma için kişisel geri bildirim.',
           features: ['30 sn video', 'Ton & akıcılık', 'Abonelik'] },
-        { name: 'Sanal Drone', tag: 'Gayrimenkul pazarlama aracı', icon: '/apps/sanal-drone.png',
+        { name: 'Sanal Drone', tag: 'Gayrimenkul pazarlama aracı', icon: '/apps/sanal-drone.webp',
           desc: 'Arsa ve gayrimenkul ilanlarını saniyeler içinde pazarlama içeriğine çevirir. Emlak danışmanları ve ofisleri için geliştirildi.',
           features: ['Haritadan alan', 'İlan görselleri', 'Drone videosu'] },
-        { name: 'Someday', tag: 'Şifreli mesaj kasası', icon: '/apps/someday.png',
+        { name: 'Someday', tag: 'Şifreli mesaj kasası', icon: '/apps/someday.webp',
           desc: 'Sevdiklerinize video, ses ve mektup mesajları; belirlediğiniz tarihte ya da güvenilir kişilerin onayıyla iletilir.',
           features: ['Uçtan uca şifreli', 'Zamanlı teslim', 'Sunucusuz'] },
       ],
@@ -245,13 +245,13 @@ const copy = {
       label: 'Apps',
       store: 'App Store',
       apps: [
-        { name: 'Speego', tag: 'AI speaking coach', icon: '/apps/speego.png',
+        { name: 'Speego', tag: 'AI speaking coach', icon: '/apps/speego.webp',
           desc: 'Analyses tone, fluency, body language and clarity from a 30-second video. Personal feedback for interviews, presentations and public speaking.',
           features: ['30-sec video', 'Tone & fluency', 'Subscription'] },
-        { name: 'Sanal Drone', tag: 'Real estate marketing tool', icon: '/apps/sanal-drone.png',
+        { name: 'Sanal Drone', tag: 'Real estate marketing tool', icon: '/apps/sanal-drone.webp',
           desc: 'Turns land and property listings into marketing content in seconds. Built for real estate agents and agencies.',
           features: ['Map-based area', 'Listing visuals', 'Drone video'] },
-        { name: 'Someday', tag: 'Encrypted message vault', icon: '/apps/someday.png',
+        { name: 'Someday', tag: 'Encrypted message vault', icon: '/apps/someday.webp',
           desc: 'Video, voice and letter messages for loved ones, delivered on a chosen date or with trusted contacts’ approval.',
           features: ['End-to-end encrypted', 'Scheduled delivery', 'Serverless'] },
       ],
@@ -420,18 +420,24 @@ function Lift({ children, className = '', y = -10, scale = 1.03, rotate }: { chi
 
 // Muted, inline, looping background video. React doesn't reliably write the `muted`
 // attribute and iOS won't autoplay without it, so it's set on the element directly.
+// The file isn't requested until the video is about to scroll into view, and it pauses
+// once it's off screen, so only what the viewer can see is downloading.
 function AutoVideo({ src, poster: still, className = '' }: { src: string; poster?: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null)
+  const near = useInView(ref, { margin: '300px 0px' })
+  const [load, setLoad] = useState(false)
+  useEffect(() => { if (near) setLoad(true) }, [near])
   useEffect(() => {
     const v = ref.current
-    if (!v) return
+    if (!v || !load) return
     v.muted = true
     v.defaultMuted = true
     v.setAttribute('muted', '')
     v.setAttribute('playsinline', '')
-    v.play().catch(() => {})
-  }, [src])
-  return <video ref={ref} src={src} poster={still} muted loop playsInline autoPlay preload="metadata" className={className} />
+    if (near) v.play().catch(() => {})
+    else v.pause()
+  }, [src, load, near])
+  return <video ref={ref} src={load ? src : undefined} poster={still} muted loop playsInline preload="none" className={className} />
 }
 
 // Click-to-watch player. The click counts as a gesture, so it first tries with sound;
@@ -853,7 +859,7 @@ function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
                   aria-label={bySlug(slug).client}
                 >
                   <Lift className={`w-full h-full rounded-[12px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
-                    <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+                    <img src={poster(slug)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </Lift>
                 </motion.button>
               ))}
@@ -946,7 +952,7 @@ function SpreadCard({ slug, i, n, progress }: { slug: string; i: number; n: numb
   return (
     <motion.div style={{ x, rotate, y, zIndex: 10 - Math.abs(Math.round(o)) }} className="absolute left-1/2 top-0 -ml-[72px] w-[144px] h-[180px] will-change-transform">
       <div className={`w-full h-full rounded-[16px] overflow-hidden bg-white ${CARD}`}>
-        <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+        <img src={poster(slug)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
       </div>
     </motion.div>
   )
@@ -977,7 +983,7 @@ function StatementSection({ t }: { t: Copy }) {
               if ('hl' in tok) return <RevealWord key={k} progress={scrollYProgress} range={range} className="text-jade">{tok.hl}</RevealWord>
               return (
                 <RevealWord key={k} progress={scrollYProgress} range={range}>
-                  <img src={tok.img} alt="" className="inline-block align-middle w-[0.95em] h-[1.1em] rounded-[0.22em] object-cover -mt-[0.18em]" />
+                  <img src={tok.img} alt="" loading="lazy" decoding="async" className="inline-block align-middle w-[0.95em] h-[1.1em] rounded-[0.22em] object-cover -mt-[0.18em]" />
                 </RevealWord>
               )
             })}
@@ -1035,7 +1041,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
               aria-label={bySlug(slug).client}
             >
               <Lift className={`w-full h-full rounded-[10px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
-                <img src={poster(slug)} alt="" className="w-full h-full object-cover" />
+                <img src={poster(slug)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
               </Lift>
             </motion.button>
           ))}
@@ -1089,7 +1095,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
                   className="bg-white rounded-b-[12px] border border-t-0 border-line p-4 md:p-6"
                 >
                   <div className="flex items-start gap-4 md:gap-5 mb-5">
-                    <img src={app.icon} alt={`${app.name} icon`} className="w-16 h-16 md:w-20 md:h-20 rounded-[18px] md:rounded-[22px] shadow-[0_16px_30px_-16px_rgba(0,0,0,0.5)]" />
+                    <img src={app.icon} alt={`${app.name} icon`} loading="lazy" decoding="async" className="w-16 h-16 md:w-20 md:h-20 rounded-[18px] md:rounded-[22px] shadow-[0_16px_30px_-16px_rgba(0,0,0,0.5)]" />
                     <div className="pt-1">
                       <p className="title text-[24px] md:text-[30px]">{app.name}</p>
                       <p className="text-[11px] md:text-[12px] text-mute mt-0.5">{app.tag} · iOS</p>
@@ -1201,7 +1207,7 @@ function StorySection({ t, onReel }: { t: Copy; onReel: () => void }) {
             {/* C — leadership */}
             <Reveal className={cardBase}>
               <div className="aspect-[16/10] overflow-hidden">
-                <img src={poster('14-statement-coffee')} alt="" className="w-full h-full object-cover" />
+                <img src={poster('14-statement-coffee')} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
               </div>
               <div className="p-4 md:p-5 bg-[#EFEFED]">
                 <p className="text-[14px] font-bold tracking-[-0.02em]">{s.c.title}</p>
@@ -1518,7 +1524,7 @@ function BandSection({ t }: { t: Copy }) {
                 <span key={i} className="flex items-center gap-3 md:gap-4 pr-3 md:pr-4 title text-[36px] md:text-[56px] whitespace-nowrap">
                   {w}
                   <span className="relative">
-                    <img src={poster(thumbs[i % thumbs.length])} alt="" className="w-[30px] h-[34px] md:w-[44px] md:h-[50px] rounded-[6px] object-cover" />
+                    <img src={poster(thumbs[i % thumbs.length])} alt="" loading="lazy" decoding="async" className="w-[30px] h-[34px] md:w-[44px] md:h-[50px] rounded-[6px] object-cover" />
                     {i % 3 === 0 && <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1 text-[8px] font-bold tracking-normal leading-tight text-center">{t.band.caption[0]}<br /><span className="font-normal">{t.band.caption[1]}</span></span>}
                   </span>
                 </span>
@@ -1569,6 +1575,8 @@ function ClosingSection({ t }: { t: Copy }) {
           <img
             src={poster('08-zuber-3d-urun-filmi')}
             alt=""
+            loading="lazy"
+            decoding="async"
             className="absolute right-0 top-0 h-[78%] w-[70%] object-cover"
             style={{ WebkitMaskImage: 'linear-gradient(200deg,#000 40%,transparent 85%)', maskImage: 'linear-gradient(200deg,#000 40%,transparent 85%)' }}
           />

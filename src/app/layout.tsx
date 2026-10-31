@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 
-// Satoshi (Fontshare, ITF Free Font License) — one family for display and text
+// Satoshi (Fontshare, ITF Free Font License) — one family for display and text.
+// Nothing on the site is set in italics, so only the upright face is loaded.
 const satoshi = localFont({
   src: [
     { path: './fonts/Satoshi-Variable.woff2', weight: '300 900', style: 'normal' },
-    { path: './fonts/Satoshi-VariableItalic.woff2', weight: '300 900', style: 'italic' },
   ],
   variable: '--font-satoshi',
   display: 'swap',
