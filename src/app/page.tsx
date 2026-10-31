@@ -33,7 +33,7 @@ const works: Work[] = [
   { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', en: 'Weekday Lunch', category: 'food', vertical: true, roles: LIVE },
   { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', en: 'Prime Cut Ribeye', category: 'food', vertical: true, roles: LIVE },
   { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', en: 'Something Better', category: 'food', vertical: true, roles: LIVE },
-  { slug: '07-ibb-bulgur-palas-drone', client: 'İBB', place: 'Bulgur Palas', title: 'Drone Tanıtım', en: 'Aerial Film', category: 'drone', vertical: true, roles: ['concept', 'direction', 'drone', 'edit', 'color'] },
+  { slug: '07-ibb-bulgur-palas-drone', client: 'İBB', place: 'Bulgur Palas', title: 'Drone Tanıtım', en: 'Aerial Film', category: 'drone', vertical: false, roles: ['concept', 'direction', 'drone', 'edit', 'color'] },
   { slug: '02-kamuran-kruvasan', client: 'Kamuran', title: 'Kruvasan', en: 'Croissant', category: 'ad', vertical: true, roles: LIVE },
   { slug: '08-zuber-3d-urun-filmi', client: 'Züber', title: '3D Ürün Filmi', en: '3D Product Film', category: 'threeD', vertical: true, roles: CG },
   { slug: '11-isijet-motion-graphic', client: 'Isıjet', title: 'Kurutma Çözümleri', en: 'Drying Solutions', category: 'motion', vertical: true, roles: MOTION },
@@ -45,11 +45,9 @@ const works: Work[] = [
 
 const bySlug = (s: string) => works.find(w => w.slug === s)!
 const titleOf = (w: Work, t: { lang: Lang }) => (t.lang === 'en' ? w.en : w.title)
-// The showreel is cut twice; only its typography differs, so each language opens its own master
-const reelOf = (t: { lang: Lang }): Work => ({
-  slug: `showreel-${t.lang}`, client: 'Yasin Aktaş', title: 'Showreel 2026', en: 'Showreel 2026',
-  category: 'reel', vertical: false, roles: ['concept', 'direction', 'edit', 'motion', 'sound'],
-})
+// The showreel is cut twice; only its typography differs, so each language plays its own master
+const reelSlug = (t: { lang: Lang }) => `showreel-${t.lang}`
+const reelPage = (t: { lang: Lang }) => (t.lang === 'en' ? '/showreel?lang=en' : '/showreel')
 const placeOf = (w: Work, t: { lang: Lang }) => (w.place && t.lang === 'en' ? w.place.replace('İstanbul', 'Istanbul') : w.place)
 const films = works.filter(w => !w.vertical)
 const verticals = works.filter(w => w.vertical)
@@ -91,6 +89,15 @@ const copy = {
       sub: 'Creative Director / Video Production',
       cta1: 'İşleri izle',
       cta2: 'Showreel',
+    },
+    showreel: {
+      kicker: ['Showreel', '2026'],
+      title: [['Tüm işler,\n'], ['50 saniyede.', 'mute']] as Parts,
+      cta: 'Sesli izle',
+      page: 'Tam sayfa izle',
+      mute: 'Sesi kapat',
+      unmute: 'Sesi aç',
+      full: 'Tam ekran',
     },
     showcase: {
       kicker: 'Prodüksiyon',
@@ -205,6 +212,15 @@ const copy = {
       sub: 'Creative Director / Video Production',
       cta1: 'Watch the work',
       cta2: 'Showreel',
+    },
+    showreel: {
+      kicker: ['Showreel', '2026'],
+      title: [['All the work,\n'], ['in 50 seconds.', 'mute']] as Parts,
+      cta: 'Watch with sound',
+      page: 'Open full page',
+      mute: 'Mute',
+      unmute: 'Unmute',
+      full: 'Fullscreen',
     },
     showcase: {
       kicker: 'Production',
@@ -486,6 +502,8 @@ const ICONS: Record<string, React.ReactNode> = {
   arrowD: <path d="M6 9l6 6 6-6" />,
   plus: <path d="M12 5v14M5 12h14" />,
   sound: <><path d="M4 9v6h4l5 4V5L8 9z" /><path d="M16 9a4 4 0 010 6M18.5 6.5a7.5 7.5 0 010 11" /></>,
+  muted: <><path d="M4 9v6h4l5 4V5L8 9z" /><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" /></>,
+  expand: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
   dots: <><circle cx="5" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="12" r="1" fill="currentColor" /><circle cx="19" cy="12" r="1" fill="currentColor" /></>,
 }
 
@@ -528,6 +546,7 @@ function Navigation({ t, lang, setLang }: { t: Copy; lang: Lang; setLang: (l: La
   }, [])
 
   const links = [
+    { label: 'Showreel', href: reelPage(t) },
     { label: t.nav.projects, href: '#isler' },
     { label: t.nav.about, href: '#hakkimda' },
     { label: t.nav.products, href: '#urunler' },
@@ -578,7 +597,7 @@ function Navigation({ t, lang, setLang }: { t: Copy; lang: Lang; setLang: (l: La
 // ============================================
 const heroFan = ['12-claudie-miami', '08-zuber-3d-urun-filmi', '11-isijet-motion-graphic', '15-mamush-ribeye', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan']
 
-function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
+function HeroSection({ t, onPlay, onReel }: { t: Copy; onPlay: (w: Work) => void; onReel: () => void }) {
   const md = useMedia('(min-width: 768px)')
   const step = md ? 84 : 40
   const mid = (heroFan.length - 1) / 2
@@ -623,9 +642,9 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
           ))}
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.8 }} className="flex flex-wrap items-center justify-center gap-3 mt-7">
-          {/* The reel is the lead action: a live thumbnail pill, not a text link */}
+          {/* The reel is the lead action: a live thumbnail pill that takes you to the player below with sound on */}
           <motion.button
-            onClick={() => onPlay(reelOf(t))}
+            onClick={onReel}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.97 }}
             transition={HOVER}
@@ -646,6 +665,140 @@ function HeroSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
           </motion.button>
           <a href="#isler" className={`${btnDark} h-14 px-6 text-[13px]`}>{t.hero.cta1}</a>
         </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// ============================================
+// SHOWREEL — plays in place, muted, whenever it's on screen
+// ============================================
+function ShowreelSection({ t, api }: { t: Copy; api: React.MutableRefObject<(() => void) | null> }) {
+  const s = t.showreel
+  const ref = useRef<HTMLVideoElement>(null)
+  const boxRef = useRef<HTMLDivElement>(null)
+  const inView = useInView(boxRef, { amount: 0.35 })
+  const [muted, setMuted] = useState(true)
+  const [heard, setHeard] = useState(false)
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    v.muted = true
+    v.defaultMuted = true
+    v.setAttribute('muted', '')
+    const sync = () => setMuted(v.muted)
+    const tick = () => v.duration && setProgress(v.currentTime / v.duration)
+    v.addEventListener('volumechange', sync)
+    v.addEventListener('timeupdate', tick)
+    return () => {
+      v.removeEventListener('volumechange', sync)
+      v.removeEventListener('timeupdate', tick)
+    }
+  }, [])
+
+  // Muted autoplay is allowed everywhere; it only runs while the player is in view
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    if (inView) v.play().catch(() => {})
+    else v.pause()
+  }, [inView, t.lang])
+
+  // The first time sound comes on, start over so the music is heard from its first beat
+  const withSound = () => {
+    const v = ref.current
+    if (!v) return
+    if (!heard) v.currentTime = 0
+    setHeard(true)
+    v.muted = false
+    v.play().catch(() => {
+      v.muted = true
+      v.play().catch(() => {})
+    })
+  }
+  api.current = () => {
+    boxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    withSound()
+  }
+
+  const toggle = () => {
+    const v = ref.current
+    if (!v) return
+    if (v.muted) withSound()
+    else v.muted = true
+  }
+  const full = () => {
+    const v = ref.current as (HTMLVideoElement & { webkitEnterFullscreen?: () => void }) | null
+    if (!v) return
+    withSound()
+    if (v.requestFullscreen) v.requestFullscreen().catch(() => {})
+    else v.webkitEnterFullscreen?.()
+  }
+
+  return (
+    <section id="showreel" className="pt-2 pb-12 md:pb-20">
+      <div className={wrap}>
+        <div className="flex items-end justify-between gap-4 mb-5 md:mb-7">
+          <div>
+            <Kicker parts={s.kicker} className="mb-2" />
+            <Title parts={s.title} className="text-[32px] md:text-[44px]" />
+          </div>
+          <a href={reelPage(t)} className={`${btnGhost} hidden sm:inline-flex`}>{s.page} <Icon name="arrowR" size={13} /></a>
+        </div>
+
+        <Reveal y={40}>
+          <div ref={boxRef} className={`relative overflow-hidden rounded-[16px] md:rounded-[22px] bg-ink aspect-video ${CARD}`}>
+            <video
+              ref={ref}
+              src={vsrc(reelSlug(t))}
+              poster={poster(reelSlug(t))}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onClick={toggle}
+              className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+            />
+            {/* Centred by a flex layer: motion's scale would overwrite a translate-based centre */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <AnimatePresence>
+                {!heard && (
+                  <motion.button
+                    key="cta"
+                    onClick={withSound}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    transition={HOVER}
+                    className="pointer-events-auto inline-flex items-center gap-2 md:gap-2.5 h-10 md:h-14 pl-1.5 md:pl-2 pr-4 md:pr-6 rounded-full bg-white text-ink shadow-[0_20px_40px_-16px_rgba(0,0,0,0.5)]"
+                  >
+                    <span className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="sound" size={15} /></span>
+                    <span className="text-[12px] md:text-[14px] font-bold tracking-[-0.02em]">{s.cta}</span>
+                    <span className="hidden sm:inline text-[11px] font-medium text-mute">0:50</span>
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent pointer-events-none" />
+            <div className="absolute left-3 right-3 bottom-3 md:left-6 md:right-6 md:bottom-5 flex items-center gap-2 md:gap-3">
+              <span className="text-white text-[11px] md:text-[12px] font-semibold whitespace-nowrap">Showreel 2026</span>
+              <span className="flex-1 h-[2px] rounded-full bg-white/25 overflow-hidden">
+                <span className="block h-full bg-white origin-left" style={{ transform: `scaleX(${progress})` }} />
+              </span>
+              <button onClick={toggle} aria-label={muted ? s.unmute : s.mute} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur text-white flex items-center justify-center transition-colors">
+                <Icon name={muted ? 'muted' : 'sound'} size={15} />
+              </button>
+              <button onClick={full} aria-label={s.full} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur text-white flex items-center justify-center transition-colors">
+                <Icon name="expand" size={14} />
+              </button>
+            </div>
+          </div>
+        </Reveal>
+        <a href={reelPage(t)} className={`${btnGhost} sm:hidden mt-3 -ml-4`}>{s.page} <Icon name="arrowR" size={13} /></a>
       </div>
     </section>
   )
@@ -1010,7 +1163,7 @@ function CommunitySection({ t }: { t: Copy }) {
 // ============================================
 // STORY — "every frame tells a story" cards
 // ============================================
-function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
+function StorySection({ t, onReel }: { t: Copy; onReel: () => void }) {
   const s = t.story
   const cardBase = `rounded-[16px] bg-white overflow-hidden ${CARD}`
   return (
@@ -1024,7 +1177,7 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
           <div className="space-y-4 md:space-y-5">
             {/* A — production */}
             <Reveal className={`${cardBase} p-4 md:p-5`}>
-              <button onClick={() => onPlay(reelOf(t))} className="inline-flex items-center gap-1.5 text-[11px] font-medium"><span className="w-4 h-4 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="play" size={9} /></span>{s.a.chip}</button>
+              <button onClick={onReel} className="inline-flex items-center gap-1.5 text-[11px] font-medium"><span className="w-4 h-4 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="play" size={9} /></span>{s.a.chip}</button>
               <div className="relative h-[170px] md:h-[200px] my-4">
                 {['01-recrea-sosyal-medya', '11-isijet-motion-graphic', '02-kamuran-kruvasan'].map((slug, i) => (
                   <motion.div
@@ -1042,7 +1195,7 @@ function StorySection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
               </div>
               <p className="text-[14px] font-bold tracking-[-0.02em]">{s.a.title}</p>
               <p className="text-[11px] md:text-[12px] text-body mt-1 leading-relaxed">{s.a.desc}</p>
-              <button onClick={() => onPlay(reelOf(t))} className={`${btnGhost} h-8 px-3 mt-3 -ml-3`}>{s.a.cta}</button>
+              <button onClick={onReel} className={`${btnGhost} h-8 px-3 mt-3 -ml-3`}>{s.a.cta}</button>
             </Reveal>
 
             {/* C — leadership */}
@@ -1541,6 +1694,9 @@ export default function HomePage() {
   const [lang, setLang] = useState<Lang>('tr')
   const t = copy[lang] as Copy
   const play = (work: Work) => setPlaying({ kind: 'file', work })
+  // Every "watch the showreel" button scrolls to the in-page player and turns its sound on
+  const reel = useRef<(() => void) | null>(null)
+  const watchReel = () => reel.current?.()
 
   useEffect(() => { document.documentElement.lang = lang }, [lang])
 
@@ -1548,13 +1704,14 @@ export default function HomePage() {
     <>
       <Navigation t={t} lang={lang} setLang={setLang} />
       <main>
-        <HeroSection t={t} onPlay={play} />
+        <HeroSection t={t} onPlay={play} onReel={watchReel} />
+        <ShowreelSection t={t} api={reel} />
         <ShowcaseSection t={t} onPlay={play} />
         <ReelSection t={t} onPlay={play} />
         <StatementSection t={t} />
         <ProductsSection t={t} onPlay={play} />
         <CommunitySection t={t} />
-        <StorySection t={t} onPlay={play} />
+        <StorySection t={t} onReel={watchReel} />
         <WorkSection t={t} onArchive={(item) => setPlaying({ kind: 'yt', item })} />
         <ArchiveSection t={t} onPlay={(item) => setPlaying({ kind: 'yt', item })} />
         <ExperienceSection t={t} />
