@@ -142,7 +142,7 @@ export default function ShowreelView() {
                       </svg>
                     </span>
                     <span className="text-[13px] md:text-[16px] font-bold tracking-[-0.02em]">{c.cta}</span>
-                    <span className="text-[12px] font-medium text-mute">0:50</span>
+                    <span className="text-[12px] font-medium text-mute">0:52</span>
                   </motion.span>
                 </motion.button>
               )}
