@@ -7,7 +7,7 @@ import { type Lang, savedLang, rememberLang, withLang } from '@/lib/lang'
 // ============================================
 // TYPES
 // ============================================
-type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'recipe' | 'ai' | 'doc' | 'reel'
+type CategoryKey = 'ad' | 'food' | 'brand' | 'threeD' | 'motion' | 'drone' | 'social' | 'recipe' | 'ai' | 'doc' | 'event' | 'reel'
 type Tone = 'ink' | 'mute' | 'maroon'
 // A headline is a list of [text, tone]; '\n' inside text breaks the line
 type Parts = [string, Tone?][]
@@ -30,6 +30,8 @@ const works: Work[] = [
   { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', en: 'Venue Film', category: 'brand', vertical: false, roles: LIVE },
   { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', title: '3D Animasyon Reklam', en: '3D Animated Ad', category: 'threeD', vertical: false, roles: CG },
   { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', en: 'Behind Every Plate', category: 'food', vertical: false, roles: LIVE },
+  { slug: '17-eatroutes-cfm', client: 'EatRoutes', place: 'Galvanize', title: 'CFM Nedir? · 100 Isolate', en: 'What is CFM? · 100 Isolate', category: 'motion', vertical: true, roles: MOTION },
+  { slug: '18-baben-dugun', client: 'Baben', title: 'Düğün Filmi', en: 'Wedding Film', category: 'event', vertical: true, roles: LIVE },
   { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', en: 'Weekday Lunch', category: 'food', vertical: true, roles: LIVE },
   { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', en: 'Prime Cut Ribeye', category: 'food', vertical: true, roles: LIVE },
   { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', en: 'Something Better', category: 'food', vertical: true, roles: LIVE },
@@ -161,7 +163,7 @@ const copy = {
       desc: 'Tüm işlerde fikirden yayına bütün süreç bende: konsept, yönetmenlik, çekim, kurgu, renk ve müşteri yönetimi.',
       like: 'İzle',
       unmute: 'Sesi aç',
-      cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', recipe: 'Tarif Videosu', ai: 'AI Video', doc: 'Belgesel', reel: 'Showreel' } as Record<CategoryKey, string>,
+      cats: { ad: 'Reklam Filmi', food: 'Restoran & F&B', brand: 'Tanıtım Filmi', threeD: '3D Animasyon', motion: 'Motion Graphic', drone: 'Drone', social: 'Sosyal Medya', recipe: 'Tarif Videosu', ai: 'AI Video', doc: 'Belgesel', event: 'Etkinlik Filmi', reel: 'Showreel' } as Record<CategoryKey, string>,
     },
     archive: {
       kicker: ['Arşiv', 'Önceki işler'],
@@ -283,7 +285,7 @@ const copy = {
       desc: 'Every piece, idea to release, handled end to end: concept, direction, cinematography, editing, colour and client management.',
       like: 'Watch',
       unmute: 'Unmute',
-      cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', recipe: 'Recipe Video', ai: 'AI Video', doc: 'Documentary', reel: 'Showreel' } as Record<CategoryKey, string>,
+      cats: { ad: 'Ad Film', food: 'Restaurant & F&B', brand: 'Promo Film', threeD: '3D Animation', motion: 'Motion Graphic', drone: 'Drone', social: 'Social Media', recipe: 'Recipe Video', ai: 'AI Video', doc: 'Documentary', event: 'Event Film', reel: 'Showreel' } as Record<CategoryKey, string>,
     },
     archive: {
       kicker: ['Archive', 'Earlier work'],
@@ -1258,11 +1260,12 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
   // origin = the tile the card grew out of (and returns to); slug = what's playing now.
   // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
   const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
-  // 15 tiles: 14 works + one archive still, so the 5×3 grid closes
+  // 20 tiles: 16 works + four archive stills, so the grid closes at 5×4 and 4×5;
+  // on phones (3 columns) the last two stills drop out for an even 3×6
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
-  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), fromArchive(archive[0])]
+  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 4).map(fromArchive)]
   const order = grid.filter((c) => c.work).map((c) => c.key)
   const current = open ? bySlug(open.slug) : null
   const step = (d: number) => open && setOpen({ origin: open.origin, slug: order[(order.indexOf(open.slug) + d + order.length) % order.length] })
@@ -1302,7 +1305,7 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
               viewport={{ once: true, margin: '-40px' }}
               transition={{ ...SPRING, delay: (i % 5) * 0.05 }}
               onClick={() => (c.item ? onArchive(c.item) : setOpen({ origin: c.key, slug: c.key }))}
-              className="group relative aspect-[4/5]"
+              className={`group relative aspect-[4/5] ${i >= 18 ? 'hidden sm:block' : ''}`}
               aria-label={c.label}
             >
               {open?.origin === c.key ? (
