@@ -33,6 +33,7 @@ const works: Work[] = [
   { slug: '17-eatroutes-cfm', client: 'EatRoutes', place: 'Galvanize', title: 'CFM Nedir? · 100 Isolate', en: 'What is CFM? · 100 Isolate', category: 'motion', vertical: true, roles: MOTION },
   { slug: '18-baben-dugun', client: 'Baben', title: 'Düğün Filmi', en: 'Wedding Film', category: 'event', vertical: true, roles: LIVE },
   { slug: '19-meliha-sultan-istanbul-rotasi', client: 'Meliha Sultan', title: 'İstanbul Rotası', en: 'Istanbul Route', category: 'motion', vertical: true, roles: MOTION },
+  { slug: '20-meliha-sultan-menu', client: 'Meliha Sultan', title: 'Menü Seçimi', en: 'Choosing the Menu', category: 'motion', vertical: true, roles: MOTION },
   { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', en: 'Weekday Lunch', category: 'food', vertical: true, roles: LIVE },
   { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', en: 'Prime Cut Ribeye', category: 'food', vertical: true, roles: LIVE },
   { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', en: 'Something Better', category: 'food', vertical: true, roles: LIVE },
@@ -817,8 +818,8 @@ function ShowreelSection({ t, api }: { t: Copy; api: React.MutableRefObject<(() 
 // SHOWCASE — copy + cascading cards
 // ============================================
 const cascadeSets = [
-  ['15-mamush-ribeye', '12-claudie-miami', '08-zuber-3d-urun-filmi', '09-linde-29-ekim', '11-isijet-motion-graphic'],
-  ['02-kamuran-kruvasan', '13-mr-hakans-jeddah', '07-ibb-bulgur-palas-drone', '01-recrea-sosyal-medya', '04-kamuran-kreatif-kisa-film'],
+  ['15-mamush-ribeye', '12-claudie-miami', '08-zuber-3d-urun-filmi', '09-linde-29-ekim', '20-meliha-sultan-menu'],
+  ['02-kamuran-kruvasan', '13-mr-hakans-jeddah', '07-ibb-bulgur-palas-drone', '19-meliha-sultan-istanbul-rotasi', '04-kamuran-kreatif-kisa-film'],
 ]
 
 function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
@@ -967,7 +968,7 @@ function StatementSection({ t }: { t: Copy }) {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.8', 'end 0.45'] })
   const { scrollYProgress: fanProgress } = useScroll({ target: fanRef, offset: ['start 0.95', 'start 0.4'] })
   const n = t.statement.length
-  const stack = ['04-kamuran-kreatif-kisa-film', '09-linde-29-ekim', '11-isijet-motion-graphic', '08-zuber-3d-urun-filmi', '01-recrea-sosyal-medya']
+  const stack = ['04-kamuran-kreatif-kisa-film', '19-meliha-sultan-istanbul-rotasi', '11-isijet-motion-graphic', '08-zuber-3d-urun-filmi', '20-meliha-sultan-menu']
 
   return (
     <section className="py-24 md:py-36 overflow-hidden">
@@ -1005,7 +1006,7 @@ function StatementSection({ t }: { t: Copy }) {
 // ============================================
 // PRODUCTS — staircase intro + folder card
 // ============================================
-const stairSlugs = ['13-mr-hakans-jeddah', '15-mamush-ribeye', '12-claudie-miami', '07-ibb-bulgur-palas-drone', '02-kamuran-kruvasan']
+const stairSlugs = ['13-mr-hakans-jeddah', '15-mamush-ribeye', '20-meliha-sultan-menu', '07-ibb-bulgur-palas-drone', '02-kamuran-kruvasan']
 
 function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) {
   const md = useMedia('(min-width: 768px)')
@@ -1188,7 +1189,7 @@ function StorySection({ t, onReel }: { t: Copy; onReel: () => void }) {
             <Reveal className={`${cardBase} p-4 md:p-5`}>
               <button onClick={onReel} className="inline-flex items-center gap-1.5 text-[11px] font-medium"><span className="w-4 h-4 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="play" size={9} /></span>{s.a.chip}</button>
               <div className="relative h-[170px] md:h-[200px] my-4">
-                {['01-recrea-sosyal-medya', '11-isijet-motion-graphic', '02-kamuran-kruvasan'].map((slug, i) => (
+                {['01-recrea-sosyal-medya', '19-meliha-sultan-istanbul-rotasi', '02-kamuran-kruvasan'].map((slug, i) => (
                   <motion.div
                     key={slug}
                     initial={{ rotate: 0, x: 0 }}
@@ -1261,12 +1262,12 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
   // origin = the tile the card grew out of (and returns to); slug = what's playing now.
   // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
   const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
-  // 20 tiles: 17 works + three archive stills, so the grid closes at 5×4 and 4×5;
-  // on phones (3 columns) the last two stills drop out for an even 3×6
+  // 20 tiles: 18 works + two archive stills, so the grid closes at 5×4 and 4×5;
+  // on phones (3 columns) the two stills drop out for an even 3×6
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
-  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 3).map(fromArchive)]
+  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 2).map(fromArchive)]
   const order = grid.filter((c) => c.work).map((c) => c.key)
   const current = open ? bySlug(open.slug) : null
   const step = (d: number) => open && setOpen({ origin: open.origin, slug: order[(order.indexOf(open.slug) + d + order.length) % order.length] })
@@ -1514,7 +1515,7 @@ function ExperienceSection({ t }: { t: Copy }) {
 // LIME BAND
 // ============================================
 function BandSection({ t }: { t: Copy }) {
-  const thumbs = ['12-claudie-miami', '10-hepsiburada-3d-animasyon', '15-mamush-ribeye', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '13-mr-hakans-jeddah']
+  const thumbs = ['12-claudie-miami', '10-hepsiburada-3d-animasyon', '20-meliha-sultan-menu', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '19-meliha-sultan-istanbul-rotasi']
   const words = [...t.band.words, ...t.band.words]
   const icons = ['camera', 'cube', 'drone', 'spark', 'film', 'pen', 'layers', 'play', 'bolt', 'heart']
   return (
