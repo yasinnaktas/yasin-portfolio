@@ -32,6 +32,7 @@ const works: Work[] = [
   { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', en: 'Behind Every Plate', category: 'food', vertical: false, roles: LIVE },
   { slug: '17-eatroutes-cfm', client: 'EatRoutes', place: 'Galvanize', title: 'CFM Nedir? · 100 Isolate', en: 'What is CFM? · 100 Isolate', category: 'motion', vertical: true, roles: MOTION },
   { slug: '18-baben-dugun', client: 'Baben', title: 'Düğün Filmi', en: 'Wedding Film', category: 'event', vertical: true, roles: LIVE },
+  { slug: '19-meliha-sultan-istanbul-rotasi', client: 'Meliha Sultan', title: 'İstanbul Rotası', en: 'Istanbul Route', category: 'motion', vertical: true, roles: MOTION },
   { slug: '12-claudie-miami', client: 'CLAUDIE', place: 'Miami', title: 'Weekday Lunch', en: 'Weekday Lunch', category: 'food', vertical: true, roles: LIVE },
   { slug: '15-mamush-ribeye', client: 'Mamush', title: 'Prime Cut Ribeye', en: 'Prime Cut Ribeye', category: 'food', vertical: true, roles: LIVE },
   { slug: '13-mr-hakans-jeddah', client: 'Mr.Hakans', place: 'Jeddah', title: 'Something Better', en: 'Something Better', category: 'food', vertical: true, roles: LIVE },
@@ -603,13 +604,13 @@ function Navigation({ t, lang, setLang }: { t: Copy; lang: Lang; setLang: (l: La
 // ============================================
 // HERO — headline + fanned stack
 // ============================================
-const heroFan = ['12-claudie-miami', '08-zuber-3d-urun-filmi', '11-isijet-motion-graphic', '15-mamush-ribeye', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan']
+const heroFan = ['12-claudie-miami', '08-zuber-3d-urun-filmi', '19-meliha-sultan-istanbul-rotasi', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan']
 
 function HeroSection({ t, onPlay, onReel }: { t: Copy; onPlay: (w: Work) => void; onReel: () => void }) {
   const md = useMedia('(min-width: 768px)')
-  const step = md ? 84 : 40
+  const step = md ? 84 : 36
   const mid = (heroFan.length - 1) / 2
-  const tilt = [-7, 4, -3, 2, -4, 5, 8]
+  const tilt = [-7, 4, -3, 2, -2, -4, 5, 8]
   // Raise the hovered card instantly; animating zIndex makes it slide through its neighbours
   const [hover, setHover] = useState<number | null>(null)
   const canHover = useCanHover()
@@ -668,7 +669,7 @@ function HeroSection({ t, onPlay, onReel }: { t: Copy; onPlay: (w: Work) => void
             </span>
             <span className="text-left leading-tight">
               <span className="block text-[14px] font-bold tracking-[-0.02em]">{t.hero.cta2} 2026</span>
-              <span className="block text-[11px] font-medium text-mute">0:50</span>
+              <span className="block text-[11px] font-medium text-mute">0:52</span>
             </span>
           </motion.button>
           <a href="#isler" className={`${btnDark} h-14 px-6 text-[13px]`}>{t.hero.cta1}</a>
@@ -786,7 +787,7 @@ function ShowreelSection({ t, api }: { t: Copy; api: React.MutableRefObject<(() 
                   >
                     <span className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-ink text-white flex items-center justify-center"><Icon name="sound" size={15} /></span>
                     <span className="text-[12px] md:text-[14px] font-bold tracking-[-0.02em]">{s.cta}</span>
-                    <span className="hidden sm:inline text-[11px] font-medium text-mute">0:50</span>
+                    <span className="hidden sm:inline text-[11px] font-medium text-mute">0:52</span>
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -1260,12 +1261,12 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
   // origin = the tile the card grew out of (and returns to); slug = what's playing now.
   // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
   const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
-  // 20 tiles: 16 works + four archive stills, so the grid closes at 5×4 and 4×5;
+  // 20 tiles: 17 works + three archive stills, so the grid closes at 5×4 and 4×5;
   // on phones (3 columns) the last two stills drop out for an even 3×6
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
-  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 4).map(fromArchive)]
+  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 3).map(fromArchive)]
   const order = grid.filter((c) => c.work).map((c) => c.key)
   const current = open ? bySlug(open.slug) : null
   const step = (d: number) => open && setOpen({ origin: open.origin, slug: order[(order.indexOf(open.slug) + d + order.length) % order.length] })
