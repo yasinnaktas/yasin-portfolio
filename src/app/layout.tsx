@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
+import { SITE, NAME } from '@/lib/seo'
 
 // Satoshi (Fontshare, ITF Free Font License) — one family for display and text.
 // Nothing on the site is set in italics, so only the upright face is loaded.
@@ -12,21 +13,14 @@ const satoshi = localFont({
   display: 'swap',
 })
 
-const description = 'Creative Director / Video Production — reklam filmi, 3D, drone ve yapay zeka destekli video. 1000+ marka, 50M+ izlenme, başarılı exit ve App Store’da yayında iOS ürünleri.'
-
+// Site-wide defaults; each page sets its own title, description, canonical address and share card
 export const metadata: Metadata = {
-  metadataBase: new URL('https://xn--yasinakta-82b.com'),
+  metadataBase: new URL(SITE),
   title: 'Yasin Aktaş | Creative Director / Video Production',
-  description,
-  keywords: ['creative director', 'head of creative', 'reklam filmi', 'yapay zeka video', 'video prodüksiyon', 'iOS uygulama', 'İstanbul'],
-  openGraph: {
-    title: 'Yasin Aktaş | Creative Director / Video Production',
-    description,
-    locale: 'tr_TR',
-    type: 'website',
-  },
-  twitter: { card: 'summary_large_image' },
-  robots: { index: true, follow: true },
+  applicationName: NAME,
+  authors: [{ name: NAME, url: SITE }],
+  creator: NAME,
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-video-preview': -1, 'max-snippet': -1 } },
 }
 
 export const viewport = {

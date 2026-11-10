@@ -33,6 +33,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // English used to live at ?lang=en; those links now land on the /en pages
+  async redirects() {
+    const en = [{ type: 'query', key: 'lang', value: 'en' }]
+    return [
+      { source: '/', has: en, destination: '/en', permanent: true },
+      { source: '/showreel', has: en, destination: '/en/showreel', permanent: true },
+    ]
+  },
   async headers() {
     // Media keeps its file name when replaced, so it isn't cached forever: a week, then
     // served from cache while the browser checks for a newer copy in the background

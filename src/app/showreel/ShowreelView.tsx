@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { type Lang, savedLang, rememberLang, withLang } from '@/lib/lang'
+import { type Lang, rememberLang, withLang } from '@/lib/lang'
 
 // A shareable page that is nothing but the reel: it starts playing (muted) the moment it
 // opens, and one tap brings the sound in from the top. ?lang=en opens the English cut.
@@ -44,8 +44,9 @@ const btnDark = 'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounde
 const btnGhost = 'inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full text-[12px] font-medium text-ink hover:bg-black/[0.05] transition-colors'
 const MAIL = 'mailto:yasin.aktas@outlook.com.tr'
 
-export default function ShowreelView() {
-  const [lang, setLang] = useState<Lang>('tr')
+export default function ShowreelView({ initialLang = 'tr' }: { initialLang?: Lang }) {
+  // Server-rendered in the language of its address (/showreel or /en/showreel)
+  const [lang, setLang] = useState<Lang>(initialLang)
   const [heard, setHeard] = useState(false)
   const ref = useRef<HTMLVideoElement>(null)
   const c = copy[lang]
@@ -53,8 +54,6 @@ export default function ShowreelView() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    const saved = savedLang()
-    if (saved) setLang(saved)
     setReady(true)
     // React doesn't reliably write `muted`, and without it phones refuse to autoplay
     const v = ref.current
