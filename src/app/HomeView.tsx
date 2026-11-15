@@ -29,6 +29,7 @@ type Work = { slug: string; client: string; place?: string; title: string; en: s
 const works: Work[] = [
   { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', en: 'Venue Film', category: 'brand', vertical: false, roles: LIVE },
   { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', title: '3D Animasyon Reklam', en: '3D Animated Ad', category: 'threeD', vertical: false, roles: CG },
+  { slug: '21-amazon-drone-cgi', client: 'Amazon', title: '3D CGI Drone Teslimat', en: '3D CGI Drone Delivery', category: 'threeD', vertical: false, roles: CG },
   { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', en: 'Behind Every Plate', category: 'food', vertical: false, roles: LIVE },
   { slug: '17-eatroutes-cfm', client: 'EatRoutes', place: 'Galvanize', title: 'CFM Nedir? · 100 Isolate', en: 'What is CFM? · 100 Isolate', category: 'motion', vertical: true, roles: MOTION },
   { slug: '18-baben-dugun', client: 'Baben', title: 'Düğün Filmi', en: 'Wedding Film', category: 'event', vertical: true, roles: LIVE },
@@ -80,6 +81,9 @@ type Playing = { kind: 'file'; work: Work } | { kind: 'yt'; item: ArchiveItem }
 
 const vsrc = (slug: string) => `/videos/${slug}.mp4`
 const poster = (slug: string) => `/videos/${slug}.jpg`
+// Wide stills are cropped to tall cards; where the subject sits off-centre, say which part to keep
+const FOCUS: Record<string, string> = { [poster('21-amazon-drone-cgi')]: '100% 50%' }
+const focusOf = (src: string) => (FOCUS[src] ? { objectPosition: FOCUS[src] } : undefined)
 
 // ============================================
 // I18N COPY
@@ -486,7 +490,7 @@ function Player({ src, poster: still, className = '', unmuteLabel }: { src: stri
 function Tile({ src, className = '', alt = '' }: { src: string; className?: string; alt?: string }) {
   return (
     <div className={`overflow-hidden bg-[#e9e9e7] ${CARD} ${className}`}>
-      <img src={src} alt={alt} onError={thumbFallback} loading="lazy" className="w-full h-full object-cover" />
+      <img src={src} alt={alt} style={focusOf(src)} onError={thumbFallback} loading="lazy" className="w-full h-full object-cover" />
     </div>
   )
 }
@@ -607,13 +611,13 @@ function Navigation({ t, lang, setLang }: { t: Copy; lang: Lang; setLang: (l: La
 // ============================================
 // HERO — headline + fanned stack
 // ============================================
-const heroFan = ['12-claudie-miami', '08-zuber-3d-urun-filmi', '19-meliha-sultan-istanbul-rotasi', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan']
+const heroFan = ['21-amazon-drone-cgi', '12-claudie-miami', '08-zuber-3d-urun-filmi', '19-meliha-sultan-istanbul-rotasi', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan']
 
 function HeroSection({ t, onPlay, onReel }: { t: Copy; onPlay: (w: Work) => void; onReel: () => void }) {
   const md = useMedia('(min-width: 768px)')
-  const step = md ? 84 : 36
+  const step = md ? 80 : 32
   const mid = (heroFan.length - 1) / 2
-  const tilt = [-7, 4, -3, 2, -2, -4, 5, 8]
+  const tilt = [-8, -5, 4, -3, 2, -2, -4, 5, 8]
   // Raise the hovered card instantly; animating zIndex makes it slide through its neighbours
   const [hover, setHover] = useState<number | null>(null)
   const canHover = useCanHover()
@@ -641,7 +645,7 @@ function HeroSection({ t, onPlay, onReel }: { t: Copy; onPlay: (w: Work) => void
                 aria-label={bySlug(slug).client}
               >
                 <Lift y={-16} scale={1.05} rotate={0} className={`w-full h-full rounded-[12px] md:rounded-[16px] overflow-hidden bg-white ${CARD}`}>
-                  <img src={poster(slug)} alt={altOf(bySlug(slug), t)} className="w-full h-full object-cover" />
+                  <img src={poster(slug)} alt={altOf(bySlug(slug), t)} style={focusOf(poster(slug))} className="w-full h-full object-cover" />
                 </Lift>
               </motion.button>
             )
@@ -865,7 +869,7 @@ function ShowcaseSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
                   aria-label={bySlug(slug).client}
                 >
                   <Lift className={`w-full h-full rounded-[12px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
-                    <img src={poster(slug)} alt={altOf(bySlug(slug), t)} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                    <img src={poster(slug)} alt={altOf(bySlug(slug), t)} style={focusOf(poster(slug))} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </Lift>
                 </motion.button>
               ))}
@@ -958,7 +962,7 @@ function SpreadCard({ slug, i, n, progress }: { slug: string; i: number; n: numb
   return (
     <motion.div style={{ x, rotate, y, zIndex: 10 - Math.abs(Math.round(o)) }} className="absolute left-1/2 top-0 -ml-[72px] w-[144px] h-[180px] will-change-transform">
       <div className={`w-full h-full rounded-[16px] overflow-hidden bg-white ${CARD}`}>
-        <img src={poster(slug)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+        <img src={poster(slug)} alt="" style={focusOf(poster(slug))} loading="lazy" decoding="async" className="w-full h-full object-cover" />
       </div>
     </motion.div>
   )
@@ -1047,7 +1051,7 @@ function ProductsSection({ t, onPlay }: { t: Copy; onPlay: (w: Work) => void }) 
               aria-label={bySlug(slug).client}
             >
               <Lift className={`w-full h-full rounded-[10px] md:rounded-[14px] overflow-hidden bg-white ${CARD}`}>
-                <img src={poster(slug)} alt={altOf(bySlug(slug), t)} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                <img src={poster(slug)} alt={altOf(bySlug(slug), t)} style={focusOf(poster(slug))} loading="lazy" decoding="async" className="w-full h-full object-cover" />
               </Lift>
             </motion.button>
           ))}
@@ -1264,8 +1268,8 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
   // origin = the tile the card grew out of (and returns to); slug = what's playing now.
   // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
   const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
-  // 20 tiles: 18 works + two archive stills, so the grid closes at 5×4 and 4×5;
-  // on phones (3 columns) the two stills drop out for an even 3×6
+  // 19 works + two archive stills. Wider screens show 20 tiles (5×4 and 4×5); phones
+  // (3 columns) show all 21 for an even 3×7, so no work is ever hidden
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
@@ -1309,14 +1313,14 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
               viewport={{ once: true, margin: '-40px' }}
               transition={{ ...SPRING, delay: (i % 5) * 0.05 }}
               onClick={() => (c.item ? onArchive(c.item) : setOpen({ origin: c.key, slug: c.key }))}
-              className={`group relative aspect-[4/5] ${i >= 18 ? 'hidden sm:block' : ''}`}
+              className={`group relative aspect-[4/5] ${i >= 20 ? 'sm:hidden' : ''}`}
               aria-label={c.label}
             >
               {open?.origin === c.key ? (
                 <div className="absolute inset-0 rounded-[14px] bg-black/[0.04]" />
               ) : (
                 <motion.div layoutId={`work-${c.key}`} transition={LAYOUT} style={{ borderRadius: 14 }} className="absolute inset-0 overflow-hidden bg-[#e9e9e7]">
-                  <img src={c.img} alt={c.work ? altOf(c.work, t) : c.label} loading="lazy" onError={thumbFallback} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                  <img src={c.img} alt={c.work ? altOf(c.work, t) : c.label} style={focusOf(c.img)} loading="lazy" onError={thumbFallback} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
                   <span className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-black/60 to-transparent text-white text-[11px] font-bold text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">{c.label}</span>
                 </motion.div>
               )}
