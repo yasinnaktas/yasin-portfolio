@@ -30,6 +30,7 @@ const works: Work[] = [
   { slug: '03-kamuran-mekan-tanitim', client: 'Kamuran', place: 'İstanbul', title: 'Mekân Tanıtım Filmi', en: 'Venue Film', category: 'brand', vertical: false, roles: LIVE },
   { slug: '10-hepsiburada-3d-animasyon', client: 'Hepsiburada', title: '3D Animasyon Reklam', en: '3D Animated Ad', category: 'threeD', vertical: false, roles: CG },
   { slug: '21-amazon-drone-cgi', client: 'Amazon', title: '3D CGI Drone Teslimat', en: '3D CGI Drone Delivery', category: 'threeD', vertical: false, roles: CG },
+  { slug: '22-coca-cola-istanbul', client: 'Coca-Cola', title: '3D CGI · İstanbul', en: '3D CGI · Istanbul', category: 'threeD', vertical: true, roles: CG },
   { slug: '14-statement-coffee', client: 'STATEMENT Coffee', title: 'Behind Every Plate', en: 'Behind Every Plate', category: 'food', vertical: false, roles: LIVE },
   { slug: '17-eatroutes-cfm', client: 'EatRoutes', place: 'Galvanize', title: 'CFM Nedir? · 100 Isolate', en: 'What is CFM? · 100 Isolate', category: 'motion', vertical: true, roles: MOTION },
   { slug: '18-baben-dugun', client: 'Baben', title: 'Düğün Filmi', en: 'Wedding Film', category: 'event', vertical: true, roles: LIVE },
@@ -82,7 +83,7 @@ type Playing = { kind: 'file'; work: Work } | { kind: 'yt'; item: ArchiveItem }
 const vsrc = (slug: string) => `/videos/${slug}.mp4`
 const poster = (slug: string) => `/videos/${slug}.jpg`
 // Wide stills are cropped to tall cards; where the subject sits off-centre, say which part to keep
-const FOCUS: Record<string, string> = { [poster('21-amazon-drone-cgi')]: '100% 50%' }
+const FOCUS: Record<string, string> = { [poster('21-amazon-drone-cgi')]: '100% 50%', [poster('22-coca-cola-istanbul')]: '50% 12%' }
 const focusOf = (src: string) => (FOCUS[src] ? { objectPosition: FOCUS[src] } : undefined)
 
 // ============================================
@@ -611,13 +612,15 @@ function Navigation({ t, lang, setLang }: { t: Copy; lang: Lang; setLang: (l: La
 // ============================================
 // HERO — headline + fanned stack
 // ============================================
-const heroFan = ['21-amazon-drone-cgi', '12-claudie-miami', '08-zuber-3d-urun-filmi', '19-meliha-sultan-istanbul-rotasi', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan']
+const heroFan = ['21-amazon-drone-cgi', '12-claudie-miami', '08-zuber-3d-urun-filmi', '19-meliha-sultan-istanbul-rotasi', '11-isijet-motion-graphic', '07-ibb-bulgur-palas-drone', '01-recrea-sosyal-medya', '13-mr-hakans-jeddah', '02-kamuran-kruvasan', '22-coca-cola-istanbul']
 
 function HeroSection({ t, onPlay, onReel }: { t: Copy; onPlay: (w: Work) => void; onReel: () => void }) {
   const md = useMedia('(min-width: 768px)')
-  const step = md ? 80 : 32
+  // Ten cards: the gap between them tightens on narrower screens so the fan always fits
+  const lg = useMedia('(min-width: 1024px)')
+  const step = lg ? 76 : md ? 60 : 28
   const mid = (heroFan.length - 1) / 2
-  const tilt = [-8, -5, 4, -3, 2, -2, -4, 5, 8]
+  const tilt = [-8, -5, 4, -3, 2, -2, -4, 3, -5, 7]
   // Raise the hovered card instantly; animating zIndex makes it slide through its neighbours
   const [hover, setHover] = useState<number | null>(null)
   const canHover = useCanHover()
@@ -1268,12 +1271,12 @@ function WorkSection({ t, onArchive }: { t: Copy; onArchive: (a: ArchiveItem) =>
   // origin = the tile the card grew out of (and returns to); slug = what's playing now.
   // Prev/next only swap the slug, so the shared-layout card never changes identity mid-flight.
   const [open, setOpen] = useState<{ origin: string; slug: string } | null>(null)
-  // 19 works + two archive stills. Wider screens show 20 tiles (5×4 and 4×5); phones
-  // (3 columns) show all 21 for an even 3×7, so no work is ever hidden
+  // 20 works + one archive still. Wider screens show the 20 works (5×4 and 4×5); phones
+  // (3 columns) add the still for an even 3×7, so no work is ever hidden
   type Cell = { key: string; img: string; label: string; work?: Work; item?: ArchiveItem }
   const fromWork = (w: Work): Cell => ({ key: w.slug, img: poster(w.slug), label: w.client, work: w })
   const fromArchive = (a: ArchiveItem): Cell => ({ key: `a${a.id}`, img: a.thumbnail, label: a.title, item: a })
-  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 2).map(fromArchive)]
+  const grid: Cell[] = [...verticals.slice(0, 7).map(fromWork), ...films.map(fromWork), ...verticals.slice(7).map(fromWork), ...archive.slice(0, 1).map(fromArchive)]
   const order = grid.filter((c) => c.work).map((c) => c.key)
   const current = open ? bySlug(open.slug) : null
   const step = (d: number) => open && setOpen({ origin: open.origin, slug: order[(order.indexOf(open.slug) + d + order.length) % order.length] })
